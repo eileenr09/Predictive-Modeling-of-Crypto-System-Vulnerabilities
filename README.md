@@ -1,6 +1,4 @@
 # Predictive-Modeling-of-Crypto-System-Vulnerabilities
-
-# Predictive Modeling of Crypto-System Vulnerabilities
 **Authors:** Eileen Rashduni · Atharv Koratkar
 
 ---
