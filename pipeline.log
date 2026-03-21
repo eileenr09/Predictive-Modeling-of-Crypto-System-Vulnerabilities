@@ -1,0 +1,177 @@
+2026-03-20 12:29:44,362 [INFO]   All 6 data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-03-20 12:29:44,363 [INFO] ============================================================
+2026-03-20 12:29:44,363 [INFO] STAGE 1 — Data Ingestion
+2026-03-20 12:29:44,364 [INFO] ============================================================
+2026-03-20 12:29:48,353 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-20 12:29:50,493 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-20 12:29:50,601 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-20 12:29:50,675 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-20 12:29:50,762 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-20 12:30:00,491 [INFO]   CSIS PDF: extracted via pypdf
+2026-03-20 12:30:00,560 [INFO]   CSIS: 218 incidents parsed from PDF
+2026-03-20 12:30:00,590 [INFO]   Combined: 1836 unique records (dropped 713 duplicates)
+2026-03-20 12:30:00,592 [INFO]   Total records : 1,836
+2026-03-20 12:30:00,594 [INFO]   Crypto-related: 61
+2026-03-20 12:30:00,595 [INFO]   Year range    : 2004 – 2025
+2026-03-20 12:30:00,637 [INFO]   Sources       : {'HHS': 883, 'IIB': 416, 'DBN': 274, 'CSIS': 218, 'DBEN': 37, 'DF1': 8}
+2026-03-20 12:30:00,668 [INFO] ============================================================
+2026-03-20 12:30:00,674 [INFO] STAGE 2 — Feature Engineering
+2026-03-20 12:30:00,674 [INFO] ============================================================
+2026-03-20 12:30:04,315 [INFO]   Label distribution: {1: 14, 0: 8}
+2026-03-20 12:30:04,347 [INFO]   Dropping 2 highly correlated features
+2026-03-20 12:30:04,349 [INFO]   Feature matrix: (22, 62) | Positive rate: 0.64 | Features: 62
+2026-03-20 12:30:04,375 [INFO]   External: AI workforce dataset loaded
+2026-03-20 12:30:04,564 [INFO]   External: Market trend dataset loaded
+2026-03-20 12:30:04,612 [INFO]   External: World Bank dataset loaded
+2026-03-20 12:30:04,806 [INFO]   External features: 38 columns × 22 years
+2026-03-20 12:30:04,840 [INFO]   Dropped 7 redundant external features
+2026-03-20 12:30:04,842 [INFO]   Combined feature matrix: (22, 92) (base: 62, external: 38)
+2026-03-20 12:30:04,853 [INFO]   Feature matrix : (22, 92)
+2026-03-20 12:30:04,853 [INFO]   Positive rate  : 63.6%  (14/22 years)
+2026-03-20 12:30:04,854 [INFO]   Feature count  : 92
+2026-03-20 12:30:04,855 [INFO] ============================================================
+2026-03-20 12:30:04,855 [INFO] STAGE 3 — Exploratory Data Analysis Plots
+2026-03-20 12:30:04,856 [INFO] ============================================================
+2026-03-20 12:30:09,346 [INFO]   EDA plots saved.
+2026-03-20 12:30:09,347 [INFO] ============================================================
+2026-03-20 12:30:09,347 [INFO] STAGE 4 — Walk-Forward Model Training
+2026-03-20 12:30:09,347 [INFO] ============================================================
+2026-03-20 12:30:09,730 [INFO]   Fold 5: skipping (single class in train)
+2026-03-20 12:30:09,732 [INFO]   Fold 6: skipping (single class in train)
+2026-03-20 12:30:09,734 [INFO]   Fold 7: train 2004–2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-20 12:30:13,896 [INFO]   Fold 8: train 2004–2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-20 12:30:17,652 [INFO]   Fold 9: train 2004–2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-20 12:30:21,708 [INFO]   Fold 10: train 2004–2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-20 12:30:25,983 [INFO]   Fold 11: train 2004–2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-20 12:30:30,306 [INFO]   Fold 12: train 2004–2015 | test 2016 | y=[0] | n_train=12 pos=6
+2026-03-20 12:30:34,624 [INFO]   Fold 13: train 2004–2016 | test 2017 | y=[1] | n_train=13 pos=6
+2026-03-20 12:30:38,995 [INFO]   Fold 14: train 2004–2017 | test 2018 | y=[1] | n_train=14 pos=7
+2026-03-20 12:30:43,371 [INFO]   Fold 15: train 2004–2018 | test 2019 | y=[0] | n_train=15 pos=8
+2026-03-20 12:30:47,748 [INFO]   Fold 16: train 2004–2019 | test 2020 | y=[1] | n_train=16 pos=8
+2026-03-20 12:30:52,035 [INFO]   Fold 17: train 2004–2020 | test 2021 | y=[1] | n_train=17 pos=9
+2026-03-20 12:30:56,278 [INFO]   Fold 18: train 2004–2021 | test 2022 | y=[1] | n_train=18 pos=10
+2026-03-20 12:31:00,510 [INFO]   Fold 19: train 2004–2022 | test 2023 | y=[1] | n_train=19 pos=11
+2026-03-20 12:31:04,487 [INFO]   Fold 20: train 2004–2023 | test 2024 | y=[1] | n_train=20 pos=12
+2026-03-20 12:31:08,547 [INFO]   Fold 21: train 2004–2024 | test 2025 | y=[1] | n_train=21 pos=13
+2026-03-20 12:31:12,542 [INFO]   Complete: 75 fold-model results
+2026-03-20 12:31:12,542 [INFO] ============================================================
+2026-03-20 12:31:12,543 [INFO] STAGE 5 — Evaluation
+2026-03-20 12:31:12,543 [INFO] ============================================================
+2026-03-20 12:31:12,584 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_folds
+model                                                         
+LogisticRegression  0.1613    0.5021  0.9247   0.5385       15
+RidgeClassifier     0.2006    0.5928  0.9110   0.5000       15
+GradientBoosting    0.2779    0.7667  0.8913   0.4231       15
+ExtraTrees          0.1529    0.4865  0.8891   0.4615       15
+RandomForest        0.1867    0.5499  0.8567   0.3462       15
+2026-03-20 12:31:18,830 [INFO]   Model evaluation plots saved.
+2026-03-20 12:31:18,831 [INFO] ============================================================
+2026-03-20 12:31:18,831 [INFO] STAGE 6 — Risk Scores (Latest Years)
+2026-03-20 12:31:18,832 [INFO] ============================================================
+2026-03-20 12:31:18,837 [INFO] 
+  Best model: LogisticRegression
+2026-03-20 12:31:18,932 [INFO] 
+  Artefacts saved to outputs/model_artefacts.pkl
+2026-03-20 12:31:18,937 [INFO]   Outputs (13 files): ['01_dataset_overview.png', '02_sector_distribution.png', '03_method_distribution.png', '04_crypto_vs_all.png', '05_records_over_time.png', '06_model_comparison.png', '07_pr_curves.png', '08_probability_timeline.png', '09_feature_importance.png', '10_calibration.png', '11_confusion_matrix_heatmap.png', '12_brier_logloss_by_fold.png', 'model_artefacts.pkl']
+2026-03-20 12:38:31,404 [INFO]   All 6 data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-03-20 12:38:31,405 [INFO] ============================================================
+2026-03-20 12:38:31,407 [INFO] STAGE 1 — Data Ingestion
+2026-03-20 12:38:31,408 [INFO] ============================================================
+2026-03-20 12:38:46,721 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-20 12:38:48,054 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-20 12:38:48,156 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-20 12:38:48,259 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-20 12:38:48,355 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-20 12:39:00,634 [INFO]   CSIS PDF: extracted via pypdf
+2026-03-20 12:39:02,008 [INFO]   CSIS: 218 incidents parsed from PDF
+2026-03-20 12:39:06,834 [INFO]   Combined: 1836 unique records (dropped 713 duplicates)
+2026-03-20 12:39:06,837 [INFO]   Total records : 1,836
+2026-03-20 12:39:06,842 [INFO]   Crypto-related: 61
+2026-03-20 12:39:06,843 [INFO]   Year range    : 2004 – 2025
+2026-03-20 12:39:06,867 [INFO]   Sources       : {'HHS': 883, 'IIB': 416, 'DBN': 274, 'CSIS': 218, 'DBEN': 37, 'DF1': 8}
+2026-03-20 12:39:06,867 [INFO] ============================================================
+2026-03-20 12:39:06,868 [INFO] STAGE 2 — Feature Engineering
+2026-03-20 12:39:06,869 [INFO] ============================================================
+2026-03-20 12:39:21,818 [INFO]   Label distribution: {1: 14, 0: 8}
+2026-03-20 12:39:21,872 [INFO]   Dropping 2 highly correlated features
+2026-03-20 12:39:21,875 [INFO]   Feature matrix: (22, 62) | Positive rate: 0.64 | Features: 62
+2026-03-20 12:39:21,935 [INFO]   External: AI workforce dataset loaded
+2026-03-20 12:39:22,198 [INFO]   External: Market trend dataset loaded
+2026-03-20 12:39:27,556 [INFO]   All 6 data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-03-20 12:39:27,557 [INFO] ============================================================
+2026-03-20 12:39:27,557 [INFO] STAGE 1 — Data Ingestion
+2026-03-20 12:39:27,558 [INFO] ============================================================
+2026-03-20 12:39:35,235 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-20 12:39:36,388 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-20 12:39:36,471 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-20 12:39:36,536 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-20 12:39:36,603 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-20 12:39:36,608 [WARNING]   pypdf not installed — run: pip install pypdf
+2026-03-20 12:39:39,559 [INFO]   CSIS PDF: extracted via pdftotext
+2026-03-20 12:39:39,650 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-03-20 12:39:39,677 [INFO]   Combined: 1825 unique records (dropped 713 duplicates)
+2026-03-20 12:39:39,678 [INFO]   Total records : 1,825
+2026-03-20 12:39:39,680 [INFO]   Crypto-related: 61
+2026-03-20 12:39:39,681 [INFO]   Year range    : 2004 – 2025
+2026-03-20 12:39:39,689 [INFO]   Sources       : {'HHS': 883, 'IIB': 416, 'DBN': 274, 'CSIS': 207, 'DBEN': 37, 'DF1': 8}
+2026-03-20 12:39:39,689 [INFO] ============================================================
+2026-03-20 12:39:39,690 [INFO] STAGE 2 — Feature Engineering
+2026-03-20 12:39:39,691 [INFO] ============================================================
+2026-03-20 12:39:59,032 [INFO]   Label distribution: {1: 14, 0: 8}
+2026-03-20 12:39:59,071 [INFO]   Dropping 2 highly correlated features
+2026-03-20 12:39:59,077 [INFO]   Feature matrix: (22, 62) | Positive rate: 0.64 | Features: 62
+2026-03-20 12:39:59,113 [INFO]   External: AI workforce dataset loaded
+2026-03-20 12:39:59,308 [INFO]   External: Market trend dataset loaded
+2026-03-20 12:39:59,377 [INFO]   External: World Bank dataset loaded
+2026-03-20 12:39:59,551 [INFO]   External features: 38 columns × 22 years
+2026-03-20 12:39:59,597 [INFO]   Dropped 7 redundant external features
+2026-03-20 12:39:59,599 [INFO]   Combined feature matrix: (22, 92) (base: 62, external: 38)
+2026-03-20 12:39:59,608 [INFO]   Feature matrix : (22, 92)
+2026-03-20 12:39:59,609 [INFO]   Positive rate  : 63.6%  (14/22 years)
+2026-03-20 12:39:59,610 [INFO]   Feature count  : 92
+2026-03-20 12:39:59,610 [INFO] ============================================================
+2026-03-20 12:39:59,612 [INFO] STAGE 3 — Exploratory Data Analysis Plots
+2026-03-20 12:39:59,613 [INFO] ============================================================
+2026-03-20 12:40:07,548 [INFO]   EDA plots saved.
+2026-03-20 12:40:07,549 [INFO] ============================================================
+2026-03-20 12:40:07,550 [INFO] STAGE 4 — Walk-Forward Model Training
+2026-03-20 12:40:07,550 [INFO] ============================================================
+2026-03-20 12:40:09,087 [INFO]   Fold 5: skipping (single class in train)
+2026-03-20 12:40:09,089 [INFO]   Fold 6: skipping (single class in train)
+2026-03-20 12:40:09,091 [INFO]   Fold 7: train 2004–2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-20 12:40:13,259 [INFO]   Fold 8: train 2004–2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-20 12:40:17,507 [INFO]   Fold 9: train 2004–2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-20 12:40:21,920 [INFO]   Fold 10: train 2004–2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-20 12:40:26,523 [INFO]   Fold 11: train 2004–2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-20 12:40:31,418 [INFO]   Fold 12: train 2004–2015 | test 2016 | y=[0] | n_train=12 pos=6
+2026-03-20 12:40:36,443 [INFO]   Fold 13: train 2004–2016 | test 2017 | y=[1] | n_train=13 pos=6
+2026-03-20 12:40:41,202 [INFO]   Fold 14: train 2004–2017 | test 2018 | y=[1] | n_train=14 pos=7
+2026-03-20 12:40:46,306 [INFO]   Fold 15: train 2004–2018 | test 2019 | y=[0] | n_train=15 pos=8
+2026-03-20 12:40:51,115 [INFO]   Fold 16: train 2004–2019 | test 2020 | y=[1] | n_train=16 pos=8
+2026-03-20 12:40:55,977 [INFO]   Fold 17: train 2004–2020 | test 2021 | y=[1] | n_train=17 pos=9
+2026-03-20 12:41:00,487 [INFO]   Fold 18: train 2004–2021 | test 2022 | y=[1] | n_train=18 pos=10
+2026-03-20 12:41:04,890 [INFO]   Fold 19: train 2004–2022 | test 2023 | y=[1] | n_train=19 pos=11
+2026-03-20 12:41:09,366 [INFO]   Fold 20: train 2004–2023 | test 2024 | y=[1] | n_train=20 pos=12
+2026-03-20 12:41:13,864 [INFO]   Fold 21: train 2004–2024 | test 2025 | y=[1] | n_train=21 pos=13
+2026-03-20 12:41:18,336 [INFO]   Complete: 75 fold-model results
+2026-03-20 12:41:18,337 [INFO] ============================================================
+2026-03-20 12:41:18,337 [INFO] STAGE 5 — Evaluation
+2026-03-20 12:41:18,338 [INFO] ============================================================
+2026-03-20 12:41:18,405 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_folds
+model                                                         
+LogisticRegression  0.1609    0.5013  0.9247   0.5385       15
+RidgeClassifier     0.2004    0.5923  0.9220   0.5385       15
+GradientBoosting    0.2778    0.7663  0.8913   0.4231       15
+ExtraTrees          0.1526    0.4856  0.8891   0.4615       15
+RandomForest        0.1867    0.5500  0.8567   0.3462       15
+2026-03-20 12:41:24,751 [INFO]   Model evaluation plots saved.
+2026-03-20 12:41:24,752 [INFO] ============================================================
+2026-03-20 12:41:24,752 [INFO] STAGE 6 — Risk Scores (Latest Years)
+2026-03-20 12:41:24,753 [INFO] ============================================================
+2026-03-20 12:41:24,758 [INFO] 
+  Best model: LogisticRegression
+2026-03-20 12:41:24,943 [INFO] 
+  Artefacts saved to outputs/model_artefacts.pkl
+2026-03-20 12:41:24,945 [INFO]   Outputs (13 files): ['01_dataset_overview.png', '02_sector_distribution.png', '03_method_distribution.png', '04_crypto_vs_all.png', '05_records_over_time.png', '06_model_comparison.png', '07_pr_curves.png', '08_probability_timeline.png', '09_feature_importance.png', '10_calibration.png', '11_confusion_matrix_heatmap.png', '12_brier_logloss_by_fold.png', 'model_artefacts.pkl']
