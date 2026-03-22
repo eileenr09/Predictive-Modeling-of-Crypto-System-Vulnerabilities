@@ -511,54 +511,287 @@ def load_csis_pdf(path: str) -> pd.DataFrame:
     return pd.DataFrame(records, columns=CANONICAL_COLS)
 
 
+# ── Source G: Structured Cyber Incident Database (cyber_events) ─────────────
+# 16,532 structured incidents 2014–2026 with organisation, sector, method, country.
+# This is the largest single dataset in the project by row count.
+
+# Maps NAICS-style industry labels → canonical sectors
+_CE_SECTOR_MAP = {
+    "Public Administration"                    : "government",
+    "Health Care and Social Assistance"        : "healthcare",
+    "Health Care And Social Assistance"        : "healthcare",
+    "Finance and Insurance"                    : "financial",
+    "Information"                              : "tech_web",
+    "Educational Services"                     : "academic",
+    "Professional, Scientific, and Technical Services": "tech_web",
+    "Retail Trade"                             : "retail",
+    "Manufacturing"                            : "other",
+    "Transportation and Warehousing"           : "transport",
+    "Arts, Entertainment, and Recreation"      : "media",
+    "Utilities"                                : "energy",
+    "Other Services (except Public Administration)": "other",
+    "Administrative and Support and Waste Management and Remediation Services": "other",
+    "Wholesale Trade"                          : "retail",
+    "Real Estate and Rental and Leasing"       : "other",
+    "Accommodation and Food Services"          : "retail",
+    "Mining, Quarrying, and Oil and Gas Extraction": "energy",
+    "Construction"                             : "other",
+    "Undetermined"                             : "unknown",
+}
+
+# Maps event_subtype → canonical method_category
+_CE_METHOD_MAP = {
+    "Exploitation of Application Server"       : "hacking",
+    "Exploitation Of Application Server"       : "hacking",
+    "Data Attack"                              : "hacking",
+    "External Denial of Service"               : "ddos",
+    "Internal Denial of Service"               : "ddos",
+    "Exploitation of End Hosts"                : "malware",
+    "Message Manipulation"                     : "phishing",
+    "Exploitation of Sensors"                  : "hacking",
+    "Exploitation of Network Infrastructure"   : "hacking",
+    "Exploitation of Data in Transit"          : "hacking",
+    "Physical Attack"                          : "lost_device",
+    "Undetermined"                             : "other",
+}
+
+
+def _ce_sector(raw: str) -> str:
+    """Look up canonical sector from the CE industry label."""
+    for key, val in _CE_SECTOR_MAP.items():
+        if key.lower() in str(raw).lower():
+            return val
+    return categorise_sector(raw)   # fallback to generic mapper
+
+
+def _ce_method(subtype: str) -> str:
+    """Look up canonical method from event_subtype (may be comma-joined)."""
+    if not isinstance(subtype, str):
+        return "other"
+    # subtype can be "Data Attack,Exploitation of Application Server" — use first token
+    primary = subtype.split(",")[0].strip()
+    return _CE_METHOD_MAP.get(primary, categorise_method(primary))
+
+
+def load_cyber_events(path: str) -> pd.DataFrame:
+    """
+    Load the structured cyber incident database (Source G).
+    Each row is one named incident against one organisation.
+    Records affected: extracted from 'magnitude' or org_data/cust_data text
+    where available; otherwise NaN (the model uses log-transformed sums so NaN
+    rows still contribute to breach-count features).
+    """
+    df = pd.read_csv(path, low_memory=False)
+    df.columns = [c.strip().lower() for c in df.columns]
+
+    # Parse numeric records from magnitude field where it contains a count string
+    def _parse_magnitude(val) -> float:
+        if not isinstance(val, str):
+            return np.nan
+        # Patterns like "5M+ downloads affected", "1.2 million records"
+        val = val.lower().replace(",", "")
+        m = re.search(r"([\d.]+)\s*(m\b|million|b\b|billion|k\b|thousand)?", val)
+        if m:
+            try:
+                n = float(m.group(1))
+                suffix = (m.group(2) or "").strip()
+                mult = {"m": 1e6, "million": 1e6, "b": 1e9, "billion": 1e9,
+                        "k": 1e3, "thousand": 1e3}.get(suffix, 1)
+                return n * mult
+            except ValueError:
+                pass
+        return np.nan
+
+    records = []
+    for _, row in df.iterrows():
+        try:
+            year = int(float(str(row.get("year", "")).strip()))
+        except (ValueError, TypeError):
+            continue
+        if year < 2004 or year > 2026:
+            continue
+
+        entity    = str(row.get("organization", "")).strip()
+        industry  = str(row.get("industry", ""))
+        subtype   = str(row.get("event_subtype", ""))
+        desc      = str(row.get("description", ""))
+        org_data  = str(row.get("org_data", ""))
+        cust_data = str(row.get("cust_data", ""))
+        magnitude = row.get("magnitude", np.nan)
+        motive    = str(row.get("motive", ""))
+
+        # Method: check description/motive for more specific keywords first,
+        # then fall back to event_subtype mapping
+        method_text = subtype + " " + motive + " " + desc
+        method_cat  = _ce_method(subtype)
+        # Override with description keywords for higher-signal methods
+        for kw, cat in [("ransomware", "malware"), ("phish", "phishing"),
+                        ("supply chain", "supply_chain"), ("insider", "insider"),
+                        ("ddos", "ddos"), ("smart contract", "smart_contract_exploit"),
+                        ("flash loan", "smart_contract_exploit")]:
+            if kw in method_text.lower():
+                method_cat = cat
+                break
+
+        records.append({
+            "year"            : year,
+            "entity"          : entity,
+            "sector_raw"      : industry,
+            "sector"          : _ce_sector(industry),
+            "method_raw"      : subtype,
+            "method_category" : method_cat,
+            "records_affected": _parse_magnitude(magnitude),
+            "is_crypto"       : flag_crypto(entity + " " + desc),
+            "source_id"       : "CE",
+        })
+
+    log.info(f"  CE: {len(records)} rows loaded from {path}")
+    return pd.DataFrame(records, columns=CANONICAL_COLS)
+
+
+# ── Source H: WA Data Breach Notifications ───────────────────────────────────
+# 1,533 formal breach notifications to Washington State AG, 2016–2026.
+# All have named entity, industry, cause, type, and records affected.
+
+_WA_METHOD_MAP = {
+    "Ransomware"      : "malware",
+    "Malware"         : "malware",
+    "Phishing"        : "phishing",
+    "Skimmers"        : "hacking",
+    "Other"           : "other",
+    "Unclear/unknown" : "other",
+}
+
+_WA_SECTOR_MAP = {
+    "Finance"          : "financial",
+    "Health"           : "healthcare",
+    "Business"         : "tech_web",
+    "Education"        : "academic",
+    "Non-Profit/Charity": "other",
+    "Government"       : "government",
+}
+
+
+def load_wa_breach(path: str) -> pd.DataFrame:
+    """
+    Load Washington State Data Breach Notifications (Source H).
+    All rows have a named entity, industry type, year, and cause.
+    WashingtoniansAffected is used as records_affected (minimum estimate;
+    true national figure is higher, but this is what's reported).
+    """
+    df = pd.read_csv(path)
+
+    records = []
+    for _, row in df.iterrows():
+        try:
+            year = int(float(str(row.get("Year", "")).strip()))
+        except (ValueError, TypeError):
+            continue
+        if year < 2004 or year > 2026:
+            continue
+
+        entity    = str(row.get("Name", "")).strip()
+        industry  = str(row.get("IndustryType", ""))
+        cause     = str(row.get("DataBreachCause", ""))
+        atk_type  = str(row.get("CyberattackType", ""))
+        affected  = row.get("WashingtoniansAffected", np.nan)
+
+        # Method: prefer CyberattackType (more specific), fall back to cause
+        method_raw = atk_type if atk_type not in ("nan", "") else cause
+        if atk_type in _WA_METHOD_MAP:
+            method_cat = _WA_METHOD_MAP[atk_type]
+        elif "unauthorized" in cause.lower():
+            method_cat = "unauthorized_access"
+        elif "theft" in cause.lower():
+            method_cat = "lost_device"
+        else:
+            method_cat = categorise_method(method_raw)
+
+        sector = _WA_SECTOR_MAP.get(industry, categorise_sector(industry))
+
+        records.append({
+            "year"            : year,
+            "entity"          : entity,
+            "sector_raw"      : industry,
+            "sector"          : sector,
+            "method_raw"      : method_raw,
+            "method_category" : method_cat,
+            "records_affected": float(affected) if pd.notna(affected) else np.nan,
+            "is_crypto"       : flag_crypto(entity),
+            "source_id"       : "WA",
+        })
+
+    log.info(f"  WA: {len(records)} rows loaded from {path}")
+    return pd.DataFrame(records, columns=CANONICAL_COLS)
+
+
 # ── Master loader ─────────────────────────────────────────────────────────────
 def load_all_datasets(data_dir: str = "data") -> pd.DataFrame:
     """
-    Loads all six data sources, de-duplicates, and returns a unified DataFrame.
+    Loads all eight data sources, de-duplicates, and returns a unified DataFrame.
+
+    Sources:
+      A–F  Core breach datasets (CSV + PDF) — 2,900 raw rows
+      G    Cyber Events structured incident DB (cyber_events_2026-03-22.csv) — 16,532 rows
+      H    WA Data Breach Notifications — 1,533 rows
+
+    Total after de-duplication on (entity, year, method_category): ~18,000–19,000 rows.
+    New sources G and H are searched in data_dir first, then /mnt/user-data/uploads
+    as a fallback so they work without copying files to the data/ folder.
     """
-    loaders = [
-        (load_iib,  "Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv"),
-        (load_hhs,  "Cyber_Security_Breaches.csv"),
-        (load_dbn,  "Data_BreachesN_new.csv"),
-        (load_dben, "Data_Breaches_EN_V2_2004_2017_20180220.csv"),
-        (load_df1,  "df_1.csv"),
-        (load_csis_pdf, "260306_Cyber_Events.pdf"),
+    _UPLOAD_DIR = "/mnt/user-data/uploads"
+
+    def _find(fname: str) -> str | None:
+        """Return the first existing path for fname, or None."""
+        for base in [data_dir, _UPLOAD_DIR]:
+            p = os.path.join(base, fname)
+            if os.path.exists(p):
+                return p
+        return None
+
+    core_loaders = [
+        (load_iib,       "Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv"),
+        (load_hhs,       "Cyber_Security_Breaches.csv"),
+        (load_dbn,       "Data_BreachesN_new.csv"),
+        (load_dben,      "Data_Breaches_EN_V2_2004_2017_20180220.csv"),
+        (load_df1,       "df_1.csv"),
+        (load_csis_pdf,  "260306_Cyber_Events.pdf"),
+        (load_cyber_events, "cyber_events_2026-03-22.csv"),
+        (load_wa_breach, "Data_Breach_Notifications_Affecting_Washington_Residents.csv"),
     ]
 
     frames = []
-    for loader_fn, fname in loaders:
-        fpath = os.path.join(data_dir, fname)
-        if not os.path.exists(fpath):
-            log.warning(f"  Missing: {fpath}")
+    for loader_fn, fname in core_loaders:
+        fpath = _find(fname)
+        if fpath is None:
+            log.warning(f"  Missing: {fname} (searched {data_dir} and {_UPLOAD_DIR})")
             continue
-        df = loader_fn(fpath)
-        frames.append(df)
+        try:
+            df = loader_fn(fpath)
+            frames.append(df)
+        except Exception as e:
+            log.warning(f"  Failed to load {fname}: {e}")
 
     if not frames:
         raise FileNotFoundError(
-            "\n\n  No data files were found in: " + os.path.abspath(data_dir) +
-            "\n  Please place the following files inside that folder:" +
-            "\n    • Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv" +
-            "\n    • Cyber_Security_Breaches.csv" +
-            "\n    • Data_BreachesN_new.csv" +
-            "\n    • Data_Breaches_EN_V2_2004_2017_20180220.csv" +
-            "\n    • df_1.csv" +
-            "\n    • 260306_Cyber_Events.pdf" +
-            "\n  Then re-run:  python main.py --data_dir <path_to_folder>\n"
+            "\n\n  No data files were found. Place at least one source file in: "
+            + os.path.abspath(data_dir)
+            + "\n  Then re-run:  python main.py --data_dir <path_to_folder>\n"
         )
 
     combined = pd.concat(frames, ignore_index=True)
     combined = combined[combined["year"].between(2004, 2026)]
-    # Ensure is_crypto is always proper bool (concat can produce object dtype)
     combined["is_crypto"] = combined["is_crypto"].fillna(False).astype(bool)
 
-    # Soft de-duplication: drop exact (entity, year, method_category) matches
+    # Soft de-duplication: drop exact (entity, year, method_category) triples.
+    # This collapses genuine duplicates across Wikipedia-derived sources while
+    # keeping distinct incidents from different organisations in the same year.
     before = len(combined)
     combined = combined.drop_duplicates(
         subset=["entity", "year", "method_category"], keep="first"
     )
     log.info(
-        f"  Combined: {len(combined)} unique records "
-        f"(dropped {before - len(combined)} duplicates)"
+        f"  Combined: {len(combined):,} unique records "
+        f"(dropped {before - len(combined):,} duplicates from {before:,} raw rows)"
     )
     return combined.reset_index(drop=True)

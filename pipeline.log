@@ -175,3 +175,910 @@ RandomForest        0.1867    0.5500  0.8567   0.3462       15
 2026-03-20 12:41:24,943 [INFO] 
   Artefacts saved to outputs/model_artefacts.pkl
 2026-03-20 12:41:24,945 [INFO]   Outputs (13 files): ['01_dataset_overview.png', '02_sector_distribution.png', '03_method_distribution.png', '04_crypto_vs_all.png', '05_records_over_time.png', '06_model_comparison.png', '07_pr_curves.png', '08_probability_timeline.png', '09_feature_importance.png', '10_calibration.png', '11_confusion_matrix_heatmap.png', '12_brier_logloss_by_fold.png', 'model_artefacts.pkl']
+2026-03-22 14:06:51,003 [INFO] ============================================================
+2026-03-22 14:06:51,004 [INFO] STAGE 1 — Data Ingestion
+2026-03-22 14:06:51,004 [INFO] ============================================================
+2026-03-22 14:06:54,629 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 14:06:55,073 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 14:06:55,116 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 14:06:55,157 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 14:06:55,183 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 14:06:55,472 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-03-22 14:06:56,335 [INFO]   CSIS PDF: extracted via pdftotext
+2026-03-22 14:06:56,365 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-03-22 14:06:56,381 [INFO]   Combined: 1825 unique records (dropped 713 duplicates)
+2026-03-22 14:06:56,383 [INFO]   Total records : 1,825
+2026-03-22 14:06:56,384 [INFO]   Crypto-related: 61
+2026-03-22 14:06:56,384 [INFO]   Year range    : 2004 – 2025
+2026-03-22 14:06:56,384 [INFO] ============================================================
+2026-03-22 14:06:56,384 [INFO] STAGE 2 — Feature Engineering (leakage-fixed)
+2026-03-22 14:06:56,385 [INFO] ============================================================
+2026-03-22 14:06:56,468 [INFO]   Label distribution: {1: 16, 0: 6}
+2026-03-22 14:06:56,482 [INFO]   Dropping 11 highly correlated features
+2026-03-22 14:06:56,484 [INFO]   Feature matrix: (22, 45) | Positive rate: 0.73 | Features: 45
+2026-03-22 14:06:56,511 [INFO]   External: AI workforce dataset loaded
+2026-03-22 14:06:56,606 [INFO]   External: Market trend dataset loaded
+2026-03-22 14:06:56,641 [INFO]   External: World Bank dataset loaded
+2026-03-22 14:06:57,260 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 14:06:57,293 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 14:06:57,389 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 14:06:57,407 [INFO]   Dropping 15 highly correlated features
+2026-03-22 14:06:57,408 [INFO]   Combined feature matrix: (22, 74) (base: 45, external: 54)
+2026-03-22 14:06:57,409 [INFO]   Feature matrix : (22, 74)
+2026-03-22 14:06:57,409 [INFO]   Positive rate  : 72.7%  (16/22 years)
+2026-03-22 14:06:57,410 [INFO]   Feature count  : 74
+2026-03-22 14:06:57,412 [INFO]   NaN rate       : 15.4% (handled per-fold)
+2026-03-22 14:06:57,412 [INFO] ============================================================
+2026-03-22 14:06:57,412 [INFO] STAGE 3 — Exploratory Data Analysis
+2026-03-22 14:06:57,413 [INFO] ============================================================
+2026-03-22 14:07:07,228 [INFO]   EDA plots saved.
+2026-03-22 14:07:07,229 [INFO] ============================================================
+2026-03-22 14:07:07,229 [INFO] STAGE 4 — Walk-Forward Training (fold-local scaling + bootstrap CI)
+2026-03-22 14:07:07,229 [INFO] ============================================================
+2026-03-22 14:07:07,946 [INFO]   Fold 5: skipping (single class in train years 2004–2008)
+2026-03-22 14:07:07,967 [INFO]   Fold 6: skipping (single class in train years 2004–2009)
+2026-03-22 14:07:07,990 [INFO]   Fold 7: train 2004–2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-22 14:08:12,564 [INFO]   Fold 8: train 2004–2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-22 14:09:50,057 [INFO]   Fold 9: train 2004–2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-22 14:13:38,156 [INFO]   Fold 10: train 2004–2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-22 14:17:32,462 [INFO]   Fold 11: train 2004–2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-22 14:23:04,877 [INFO] ============================================================
+2026-03-22 14:23:04,878 [INFO] STAGE 1 — Data Ingestion
+2026-03-22 14:23:04,878 [INFO] ============================================================
+2026-03-22 14:23:06,094 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 14:23:06,574 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 14:23:06,606 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 14:23:06,633 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 14:23:06,662 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 14:23:06,882 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-03-22 14:23:07,285 [INFO]   CSIS PDF: extracted via pdftotext
+2026-03-22 14:23:07,318 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-03-22 14:23:07,333 [INFO]   Combined: 1825 unique records (dropped 713 duplicates)
+2026-03-22 14:23:07,334 [INFO]   Total records : 1,825
+2026-03-22 14:23:07,335 [INFO]   Crypto-related: 61
+2026-03-22 14:23:07,336 [INFO]   Year range    : 2004 – 2025
+2026-03-22 14:23:07,337 [INFO] ============================================================
+2026-03-22 14:23:07,337 [INFO] STAGE 2 — Feature Engineering (leakage-fixed)
+2026-03-22 14:23:07,337 [INFO] ============================================================
+2026-03-22 14:23:07,442 [INFO]   Label distribution: {1: 16, 0: 6}
+2026-03-22 14:23:07,459 [INFO]   Dropping 11 highly correlated features
+2026-03-22 14:23:07,461 [INFO]   Feature matrix: (22, 45) | Positive rate: 0.73 | Features: 45
+2026-03-22 14:23:07,480 [INFO]   External: AI workforce dataset loaded
+2026-03-22 14:23:07,578 [INFO]   External: Market trend dataset loaded
+2026-03-22 14:23:07,605 [INFO]   External: World Bank dataset loaded
+2026-03-22 14:23:08,325 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 14:23:08,350 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 14:23:08,479 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 14:23:08,499 [INFO]   Dropping 15 highly correlated features
+2026-03-22 14:23:08,500 [INFO]   Combined feature matrix: (22, 74) (base: 45, external: 54)
+2026-03-22 14:23:08,501 [INFO]   Feature matrix : (22, 74)
+2026-03-22 14:23:08,503 [INFO]   Positive rate  : 72.7%  (16/22 years)
+2026-03-22 14:23:08,503 [INFO]   Feature count  : 74
+2026-03-22 14:23:08,506 [INFO]   NaN rate       : 15.4% (handled per-fold)
+2026-03-22 14:23:08,506 [INFO] ============================================================
+2026-03-22 14:23:08,507 [INFO] STAGE 3 — Exploratory Data Analysis
+2026-03-22 14:23:08,507 [INFO] ============================================================
+2026-03-22 14:23:13,764 [INFO]   EDA plots saved.
+2026-03-22 14:23:13,766 [INFO] ============================================================
+2026-03-22 14:23:13,766 [INFO] STAGE 4 — Walk-Forward Training (fold-local scaling + bootstrap CI)
+2026-03-22 14:23:13,766 [INFO] ============================================================
+2026-03-22 14:23:14,080 [INFO]   Fold 5: skipping (single class in train)
+2026-03-22 14:23:14,083 [INFO]   Fold 6: skipping (single class in train)
+2026-03-22 14:23:14,086 [INFO]   Fold 7: train 2004–2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-22 14:23:14,090 [WARNING]   LogisticRegression failed fold 7: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,094 [WARNING]   RidgeClassifier failed fold 7: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,097 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:23:14,099 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:23:14,101 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:23:14,106 [INFO]   Fold 8: train 2004–2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-22 14:23:14,109 [WARNING]   LogisticRegression failed fold 8: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,113 [WARNING]   RidgeClassifier failed fold 8: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,115 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:23:14,116 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:23:14,118 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:23:14,123 [INFO]   Fold 9: train 2004–2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-22 14:23:14,126 [WARNING]   LogisticRegression failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,129 [WARNING]   RidgeClassifier failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,139 [WARNING]   RandomForest failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,146 [WARNING]   ExtraTrees failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,154 [WARNING]   GradientBoosting failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,160 [INFO]   Fold 10: train 2004–2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-22 14:23:14,163 [WARNING]   LogisticRegression failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,165 [WARNING]   RidgeClassifier failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,175 [WARNING]   RandomForest failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,182 [WARNING]   ExtraTrees failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,191 [WARNING]   GradientBoosting failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,195 [INFO]   Fold 11: train 2004–2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-22 14:23:14,197 [WARNING]   LogisticRegression failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,201 [WARNING]   RidgeClassifier failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,209 [WARNING]   RandomForest failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,217 [WARNING]   ExtraTrees failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,227 [WARNING]   GradientBoosting failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,230 [INFO]   Fold 12: train 2004–2015 | test 2016 | y=[1] | n_train=12 pos=6
+2026-03-22 14:23:14,233 [WARNING]   LogisticRegression failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,237 [WARNING]   RidgeClassifier failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,246 [WARNING]   RandomForest failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,252 [WARNING]   ExtraTrees failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,261 [WARNING]   GradientBoosting failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,266 [INFO]   Fold 13: train 2004–2016 | test 2017 | y=[1] | n_train=13 pos=7
+2026-03-22 14:23:14,268 [WARNING]   LogisticRegression failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,272 [WARNING]   RidgeClassifier failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,281 [WARNING]   RandomForest failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,291 [WARNING]   ExtraTrees failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,297 [WARNING]   GradientBoosting failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,301 [INFO]   Fold 14: train 2004–2017 | test 2018 | y=[1] | n_train=14 pos=8
+2026-03-22 14:23:14,304 [WARNING]   LogisticRegression failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,309 [WARNING]   RidgeClassifier failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,316 [WARNING]   RandomForest failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,327 [WARNING]   ExtraTrees failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,334 [WARNING]   GradientBoosting failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,344 [INFO]   Fold 15: train 2004–2018 | test 2019 | y=[1] | n_train=15 pos=9
+2026-03-22 14:23:14,346 [WARNING]   LogisticRegression failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,349 [WARNING]   RidgeClassifier failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,359 [WARNING]   RandomForest failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,366 [WARNING]   ExtraTrees failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,377 [WARNING]   GradientBoosting failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,380 [INFO]   Fold 16: train 2004–2019 | test 2020 | y=[1] | n_train=16 pos=10
+2026-03-22 14:23:14,383 [WARNING]   LogisticRegression failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,393 [WARNING]   RidgeClassifier failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,409 [WARNING]   RandomForest failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,421 [WARNING]   ExtraTrees failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,431 [WARNING]   GradientBoosting failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,436 [INFO]   Fold 17: train 2004–2020 | test 2021 | y=[1] | n_train=17 pos=11
+2026-03-22 14:23:14,440 [WARNING]   LogisticRegression failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,446 [WARNING]   RidgeClassifier failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,456 [WARNING]   RandomForest failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,466 [WARNING]   ExtraTrees failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,478 [WARNING]   GradientBoosting failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,483 [INFO]   Fold 18: train 2004–2021 | test 2022 | y=[1] | n_train=18 pos=12
+2026-03-22 14:23:14,488 [WARNING]   LogisticRegression failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,497 [WARNING]   RidgeClassifier failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,508 [WARNING]   RandomForest failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,518 [WARNING]   ExtraTrees failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,530 [WARNING]   GradientBoosting failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,534 [INFO]   Fold 19: train 2004–2022 | test 2023 | y=[1] | n_train=19 pos=13
+2026-03-22 14:23:14,538 [WARNING]   LogisticRegression failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,543 [WARNING]   RidgeClassifier failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,555 [WARNING]   RandomForest failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,566 [WARNING]   ExtraTrees failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,593 [WARNING]   GradientBoosting failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,601 [INFO]   Fold 20: train 2004–2023 | test 2024 | y=[1] | n_train=20 pos=14
+2026-03-22 14:23:14,606 [WARNING]   LogisticRegression failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,610 [WARNING]   RidgeClassifier failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,616 [WARNING]   RandomForest failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,626 [WARNING]   ExtraTrees failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,633 [WARNING]   GradientBoosting failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,637 [INFO]   Fold 21: train 2004–2024 | test 2025 | y=[1] | n_train=21 pos=15
+2026-03-22 14:23:14,640 [WARNING]   LogisticRegression failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,643 [WARNING]   RidgeClassifier failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,652 [WARNING]   RandomForest failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,661 [WARNING]   ExtraTrees failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,668 [WARNING]   GradientBoosting failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:23:14,671 [INFO]   Complete: 75 fold-model results
+2026-03-22 14:23:14,671 [INFO] ============================================================
+2026-03-22 14:23:14,672 [INFO] STAGE 5 — Evaluation (Brier + ECE + CI width)
+2026-03-22 14:23:14,673 [INFO] ============================================================
+2026-03-22 14:23:14,694 [INFO] 
+                    brier  log_loss  pr_auc  roc_auc  n_folds
+model                                                        
+ExtraTrees           0.25    0.6931     1.0      NaN       15
+GradientBoosting     0.25    0.6931     1.0      NaN       15
+LogisticRegression   0.25    0.6931     1.0      NaN       15
+RandomForest         0.25    0.6931     1.0      NaN       15
+RidgeClassifier      0.25    0.6931     1.0      NaN       15
+2026-03-22 14:23:17,059 [INFO]   Model evaluation plots saved.
+2026-03-22 14:23:17,060 [INFO] ============================================================
+2026-03-22 14:23:17,060 [INFO] STAGE 6 — Ensemble Forecast with Uncertainty Bands
+2026-03-22 14:23:17,060 [INFO] ============================================================
+2026-03-22 14:33:03,599 [INFO] ============================================================
+2026-03-22 14:33:03,600 [INFO] STAGE 1 — Data Ingestion
+2026-03-22 14:33:03,600 [INFO] ============================================================
+2026-03-22 14:33:04,801 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 14:33:05,245 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 14:33:05,275 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 14:33:05,299 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 14:33:05,324 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 14:33:05,515 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-03-22 14:33:05,893 [INFO]   CSIS PDF: extracted via pdftotext
+2026-03-22 14:33:05,922 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-03-22 14:33:07,394 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-03-22 14:33:07,510 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 14:33:07,534 [INFO]   Combined: 19,279 unique records (dropped 1,324 duplicates from 20,603 raw rows)
+2026-03-22 14:33:07,536 [INFO]   Total records : 19,279
+2026-03-22 14:33:07,537 [INFO]   Crypto-related: 940
+2026-03-22 14:33:07,538 [INFO]   Year range    : 2004 – 2026
+2026-03-22 14:33:07,538 [INFO] ============================================================
+2026-03-22 14:33:07,538 [INFO] STAGE 2 — Feature Engineering (leakage-fixed)
+2026-03-22 14:33:07,539 [INFO] ============================================================
+2026-03-22 14:33:07,625 [INFO]   Label distribution: {1: 17, 0: 6}
+2026-03-22 14:33:07,638 [INFO]   Dropping 18 highly correlated features
+2026-03-22 14:33:07,639 [INFO]   Feature matrix: (23, 38) | Positive rate: 0.74 | Features: 38
+2026-03-22 14:33:07,653 [INFO]   External: AI workforce dataset loaded
+2026-03-22 14:33:07,736 [INFO]   External: Market trend dataset loaded
+2026-03-22 14:33:07,755 [INFO]   External: World Bank dataset loaded
+2026-03-22 14:33:08,351 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 14:33:08,374 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 14:33:08,469 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 14:33:08,486 [INFO]   Dropping 15 highly correlated features
+2026-03-22 14:33:08,488 [INFO]   Combined feature matrix: (23, 65) (base: 38, external: 54)
+2026-03-22 14:33:08,488 [INFO]   Feature matrix : (23, 65)
+2026-03-22 14:33:08,489 [INFO]   Positive rate  : 73.9%  (17/23 years)
+2026-03-22 14:33:08,489 [INFO]   Feature count  : 65
+2026-03-22 14:33:08,491 [INFO]   NaN rate       : 15.9% (handled per-fold)
+2026-03-22 14:33:08,491 [INFO] ============================================================
+2026-03-22 14:33:08,491 [INFO] STAGE 3 — Exploratory Data Analysis
+2026-03-22 14:33:08,492 [INFO] ============================================================
+2026-03-22 14:33:12,346 [INFO]   EDA plots saved.
+2026-03-22 14:33:12,346 [INFO] ============================================================
+2026-03-22 14:33:12,347 [INFO] STAGE 4 — Walk-Forward Training (fold-local scaling + bootstrap CI)
+2026-03-22 14:33:12,347 [INFO] ============================================================
+2026-03-22 14:33:12,544 [INFO]   Fold 5: skipping (single class in train)
+2026-03-22 14:33:12,546 [INFO]   Fold 6: skipping (single class in train)
+2026-03-22 14:33:12,549 [INFO]   Fold 7: train 2004–2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-22 14:33:12,551 [WARNING]   LogisticRegression failed fold 7: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,556 [WARNING]   RidgeClassifier failed fold 7: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,558 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:33:12,560 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:33:12,561 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:33:12,565 [INFO]   Fold 8: train 2004–2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-22 14:33:12,568 [WARNING]   LogisticRegression failed fold 8: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,571 [WARNING]   RidgeClassifier failed fold 8: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,572 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:33:12,574 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:33:12,576 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:33:12,578 [INFO]   Fold 9: train 2004–2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-22 14:33:12,581 [WARNING]   LogisticRegression failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,584 [WARNING]   RidgeClassifier failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,592 [WARNING]   RandomForest failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,600 [WARNING]   ExtraTrees failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,608 [WARNING]   GradientBoosting failed fold 9: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,611 [INFO]   Fold 10: train 2004–2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-22 14:33:12,613 [WARNING]   LogisticRegression failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,616 [WARNING]   RidgeClassifier failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,623 [WARNING]   RandomForest failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,630 [WARNING]   ExtraTrees failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,637 [WARNING]   GradientBoosting failed fold 10: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,640 [INFO]   Fold 11: train 2004–2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-22 14:33:12,642 [WARNING]   LogisticRegression failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,644 [WARNING]   RidgeClassifier failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,652 [WARNING]   RandomForest failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,659 [WARNING]   ExtraTrees failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,667 [WARNING]   GradientBoosting failed fold 11: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,671 [INFO]   Fold 12: train 2004–2015 | test 2016 | y=[1] | n_train=12 pos=6
+2026-03-22 14:33:12,674 [WARNING]   LogisticRegression failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,676 [WARNING]   RidgeClassifier failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,684 [WARNING]   RandomForest failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,691 [WARNING]   ExtraTrees failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,699 [WARNING]   GradientBoosting failed fold 12: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,702 [INFO]   Fold 13: train 2004–2016 | test 2017 | y=[1] | n_train=13 pos=7
+2026-03-22 14:33:12,703 [WARNING]   LogisticRegression failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,707 [WARNING]   RidgeClassifier failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,715 [WARNING]   RandomForest failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,722 [WARNING]   ExtraTrees failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,728 [WARNING]   GradientBoosting failed fold 13: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,732 [INFO]   Fold 14: train 2004–2017 | test 2018 | y=[1] | n_train=14 pos=8
+2026-03-22 14:33:12,735 [WARNING]   LogisticRegression failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,738 [WARNING]   RidgeClassifier failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,744 [WARNING]   RandomForest failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,751 [WARNING]   ExtraTrees failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,757 [WARNING]   GradientBoosting failed fold 14: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,761 [INFO]   Fold 15: train 2004–2018 | test 2019 | y=[1] | n_train=15 pos=9
+2026-03-22 14:33:12,763 [WARNING]   LogisticRegression failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,766 [WARNING]   RidgeClassifier failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,771 [WARNING]   RandomForest failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,778 [WARNING]   ExtraTrees failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,785 [WARNING]   GradientBoosting failed fold 15: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,788 [INFO]   Fold 16: train 2004–2019 | test 2020 | y=[1] | n_train=16 pos=10
+2026-03-22 14:33:12,791 [WARNING]   LogisticRegression failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,794 [WARNING]   RidgeClassifier failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,801 [WARNING]   RandomForest failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,809 [WARNING]   ExtraTrees failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,815 [WARNING]   GradientBoosting failed fold 16: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,820 [INFO]   Fold 17: train 2004–2020 | test 2021 | y=[1] | n_train=17 pos=11
+2026-03-22 14:33:12,822 [WARNING]   LogisticRegression failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,824 [WARNING]   RidgeClassifier failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,829 [WARNING]   RandomForest failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,836 [WARNING]   ExtraTrees failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,843 [WARNING]   GradientBoosting failed fold 17: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,847 [INFO]   Fold 18: train 2004–2021 | test 2022 | y=[1] | n_train=18 pos=12
+2026-03-22 14:33:12,849 [WARNING]   LogisticRegression failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,852 [WARNING]   RidgeClassifier failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,858 [WARNING]   RandomForest failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,864 [WARNING]   ExtraTrees failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,871 [WARNING]   GradientBoosting failed fold 18: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,875 [INFO]   Fold 19: train 2004–2022 | test 2023 | y=[1] | n_train=19 pos=13
+2026-03-22 14:33:12,877 [WARNING]   LogisticRegression failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,879 [WARNING]   RidgeClassifier failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,885 [WARNING]   RandomForest failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,891 [WARNING]   ExtraTrees failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,898 [WARNING]   GradientBoosting failed fold 19: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,901 [INFO]   Fold 20: train 2004–2023 | test 2024 | y=[1] | n_train=20 pos=14
+2026-03-22 14:33:12,903 [WARNING]   LogisticRegression failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,906 [WARNING]   RidgeClassifier failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,911 [WARNING]   RandomForest failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,918 [WARNING]   ExtraTrees failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,925 [WARNING]   GradientBoosting failed fold 20: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,929 [INFO]   Fold 21: train 2004–2024 | test 2025 | y=[1] | n_train=21 pos=15
+2026-03-22 14:33:12,931 [WARNING]   LogisticRegression failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,934 [WARNING]   RidgeClassifier failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,939 [WARNING]   RandomForest failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,947 [WARNING]   ExtraTrees failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,954 [WARNING]   GradientBoosting failed fold 21: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,957 [INFO]   Fold 22: train 2004–2025 | test 2026 | y=[1] | n_train=22 pos=16
+2026-03-22 14:33:12,960 [WARNING]   LogisticRegression failed fold 22: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,962 [WARNING]   RidgeClassifier failed fold 22: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,968 [WARNING]   RandomForest failed fold 22: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,975 [WARNING]   ExtraTrees failed fold 22: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,981 [WARNING]   GradientBoosting failed fold 22: Input X contains NaN.
+SelectKBest does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2026-03-22 14:33:12,982 [INFO]   Complete: 80 fold-model results
+2026-03-22 14:33:12,982 [INFO] ============================================================
+2026-03-22 14:33:12,982 [INFO] STAGE 5 — Evaluation (Brier + ECE + CI width)
+2026-03-22 14:33:12,983 [INFO] ============================================================
+2026-03-22 14:33:13,000 [INFO] 
+                    brier  log_loss  pr_auc  roc_auc  n_folds
+model                                                        
+ExtraTrees           0.25    0.6931     1.0      NaN       16
+GradientBoosting     0.25    0.6931     1.0      NaN       16
+LogisticRegression   0.25    0.6931     1.0      NaN       16
+RandomForest         0.25    0.6931     1.0      NaN       16
+RidgeClassifier      0.25    0.6931     1.0      NaN       16
+2026-03-22 14:33:14,977 [INFO]   Model evaluation plots saved.
+2026-03-22 14:33:14,978 [INFO] ============================================================
+2026-03-22 14:33:14,978 [INFO] STAGE 6 — Ensemble Forecast with Uncertainty Bands
+2026-03-22 14:33:14,978 [INFO] ============================================================
+2026-03-22 14:36:37,023 [INFO] ============================================================
+2026-03-22 14:36:37,024 [INFO] STAGE 1 — Data Ingestion
+2026-03-22 14:36:37,024 [INFO] ============================================================
+2026-03-22 14:36:38,222 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 14:36:38,658 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 14:36:38,689 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 14:36:38,716 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 14:36:38,745 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 14:36:38,954 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-03-22 14:36:39,331 [INFO]   CSIS PDF: extracted via pdftotext
+2026-03-22 14:36:39,361 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-03-22 14:36:40,849 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-03-22 14:36:40,962 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 14:36:40,985 [INFO]   Combined: 19,279 unique records (dropped 1,324 duplicates from 20,603 raw rows)
+2026-03-22 14:36:40,987 [INFO]   Total records : 19,279
+2026-03-22 14:36:40,987 [INFO]   Crypto-related: 940
+2026-03-22 14:36:40,988 [INFO]   Year range    : 2004 – 2026
+2026-03-22 14:36:40,988 [INFO] ============================================================
+2026-03-22 14:36:40,989 [INFO] STAGE 2 — Feature Engineering (leakage-fixed)
+2026-03-22 14:36:40,990 [INFO] ============================================================
+2026-03-22 14:36:41,081 [INFO]   Label distribution: {1: 17, 0: 6}
+2026-03-22 14:36:41,092 [INFO]   Dropping 18 highly correlated features
+2026-03-22 14:36:41,094 [INFO]   Feature matrix: (23, 38) | Positive rate: 0.74 | Features: 38
+2026-03-22 14:36:41,105 [INFO]   External: AI workforce dataset loaded
+2026-03-22 14:36:41,183 [INFO]   External: Market trend dataset loaded
+2026-03-22 14:36:41,203 [INFO]   External: World Bank dataset loaded
+2026-03-22 14:36:41,795 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 14:36:41,820 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 14:36:41,922 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 14:36:41,938 [INFO]   Dropping 15 highly correlated features
+2026-03-22 14:36:41,939 [INFO]   Combined feature matrix: (23, 65) (base: 38, external: 54)
+2026-03-22 14:36:41,940 [INFO]   Feature matrix : (23, 65)
+2026-03-22 14:36:41,940 [INFO]   Positive rate  : 73.9%  (17/23 years)
+2026-03-22 14:36:41,940 [INFO]   Feature count  : 65
+2026-03-22 14:36:41,942 [INFO]   NaN rate       : 15.9% (handled per-fold)
+2026-03-22 14:36:41,943 [INFO] ============================================================
+2026-03-22 14:36:41,943 [INFO] STAGE 3 — Exploratory Data Analysis
+2026-03-22 14:36:41,944 [INFO] ============================================================
+2026-03-22 14:36:46,089 [INFO]   EDA plots saved.
+2026-03-22 14:36:46,090 [INFO] ============================================================
+2026-03-22 14:36:46,090 [INFO] STAGE 4 — Walk-Forward Training (fold-local scaling + bootstrap CI)
+2026-03-22 14:36:46,090 [INFO] ============================================================
+2026-03-22 14:36:46,373 [INFO]   Fold 5: skipping (single class in train)
+2026-03-22 14:36:46,377 [INFO]   Fold 6: skipping (single class in train)
+2026-03-22 14:36:46,399 [INFO]   Fold 7: train 2004–2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-22 14:36:46,438 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:36:46,440 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:36:46,442 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:36:46,465 [INFO]   Fold 8: train 2004–2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-22 14:36:46,501 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:36:46,502 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:36:46,504 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:36:46,524 [INFO]   Fold 9: train 2004–2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-22 14:36:51,816 [INFO]   Fold 10: train 2004–2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-22 14:36:57,119 [INFO]   Fold 11: train 2004–2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-22 14:37:02,639 [INFO]   Fold 12: train 2004–2015 | test 2016 | y=[1] | n_train=12 pos=6
+2026-03-22 14:37:08,431 [INFO]   Fold 13: train 2004–2016 | test 2017 | y=[1] | n_train=13 pos=7
+2026-03-22 14:37:14,015 [INFO]   Fold 14: train 2004–2017 | test 2018 | y=[1] | n_train=14 pos=8
+2026-03-22 14:37:19,383 [INFO]   Fold 15: train 2004–2018 | test 2019 | y=[1] | n_train=15 pos=9
+2026-03-22 14:37:24,694 [INFO]   Fold 16: train 2004–2019 | test 2020 | y=[1] | n_train=16 pos=10
+2026-03-22 14:37:30,081 [INFO]   Fold 17: train 2004–2020 | test 2021 | y=[1] | n_train=17 pos=11
+2026-03-22 14:37:35,490 [INFO]   Fold 18: train 2004–2021 | test 2022 | y=[1] | n_train=18 pos=12
+2026-03-22 14:37:40,814 [INFO]   Fold 19: train 2004–2022 | test 2023 | y=[1] | n_train=19 pos=13
+2026-03-22 14:37:46,108 [INFO]   Fold 20: train 2004–2023 | test 2024 | y=[1] | n_train=20 pos=14
+2026-03-22 14:37:51,455 [INFO]   Fold 21: train 2004–2024 | test 2025 | y=[1] | n_train=21 pos=15
+2026-03-22 14:37:56,801 [INFO]   Fold 22: train 2004–2025 | test 2026 | y=[1] | n_train=22 pos=16
+2026-03-22 14:38:02,345 [INFO]   Complete: 80 fold-model results
+2026-03-22 14:38:02,346 [INFO] ============================================================
+2026-03-22 14:38:02,346 [INFO] STAGE 5 — Evaluation (Brier + ECE + CI width)
+2026-03-22 14:38:02,346 [INFO] ============================================================
+2026-03-22 14:38:02,367 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_folds
+model                                                         
+ExtraTrees          0.0613    0.2620     1.0      NaN       16
+GradientBoosting    0.1465    0.4535     1.0      NaN       16
+LogisticRegression  0.0038    0.0547     1.0      NaN       16
+RandomForest        0.0729    0.2918     1.0      NaN       16
+RidgeClassifier     0.0044    0.0569     1.0      NaN       16
+2026-03-22 14:38:04,647 [INFO]   Model evaluation plots saved.
+2026-03-22 14:38:04,648 [INFO] ============================================================
+2026-03-22 14:38:04,648 [INFO] STAGE 6 — Ensemble Forecast with Uncertainty Bands
+2026-03-22 14:38:04,648 [INFO] ============================================================
+2026-03-22 14:38:04,654 [INFO] 
+  Year  p(breach)          90% CI  CI width            Tier  Reliable  Actual
+2026-03-22 14:38:04,654 [INFO]   ---------------------------------------------------------------------------
+2026-03-22 14:38:04,694 [INFO]      — treat these as qualitative signals, not precise probabilities
+2026-03-22 14:41:30,325 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-03-22 14:41:30,326 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-03-22 14:41:30,326 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 14:41:30,326 [INFO] ============================================================
+2026-03-22 14:41:30,326 [INFO] STAGE 1 -- Data Ingestion
+2026-03-22 14:41:30,327 [INFO] ============================================================
+2026-03-22 14:41:31,484 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 14:41:31,916 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 14:41:31,946 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 14:41:31,971 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 14:41:31,995 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 14:41:32,191 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-03-22 14:41:32,582 [INFO]   CSIS PDF: extracted via pdftotext
+2026-03-22 14:41:32,611 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-03-22 14:41:34,087 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-03-22 14:41:34,205 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 14:41:34,225 [INFO]   Combined: 19,279 unique records (dropped 1,324 duplicates from 20,603 raw rows)
+2026-03-22 14:41:34,227 [INFO]   Total records : 19,279
+2026-03-22 14:41:34,228 [INFO]   Crypto-related: 940
+2026-03-22 14:41:34,229 [INFO]   Year range    : 2004 - 2026
+2026-03-22 14:41:34,233 [INFO]   Sources       : {'CE': 15948, 'WA': 1506, 'HHS': 883, 'IIB': 416, 'DBN': 274, 'CSIS': 207, 'DBEN': 37, 'DF1': 8}
+2026-03-22 14:41:34,233 [INFO] ============================================================
+2026-03-22 14:41:34,233 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-03-22 14:41:34,233 [INFO] ============================================================
+2026-03-22 14:41:34,316 [INFO]   Label distribution: {1: 17, 0: 6}
+2026-03-22 14:41:34,328 [INFO]   Dropping 18 highly correlated features
+2026-03-22 14:41:34,329 [INFO]   Feature matrix: (23, 38) | Positive rate: 0.74 | Features: 38
+2026-03-22 14:41:34,342 [INFO]   External: AI workforce dataset loaded
+2026-03-22 14:41:34,427 [INFO]   External: Market trend dataset loaded
+2026-03-22 14:41:34,446 [INFO]   External: World Bank dataset loaded
+2026-03-22 14:41:35,050 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 14:41:35,075 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 14:41:35,170 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 14:41:35,184 [INFO]   Dropping 15 highly correlated features
+2026-03-22 14:41:35,186 [INFO]   Combined feature matrix: (23, 65) (base: 38, external: 54)
+2026-03-22 14:41:35,186 [INFO]   Feature matrix : (23, 65)
+2026-03-22 14:41:35,187 [INFO]   Positive rate  : 73.9%  (17/23 years)
+2026-03-22 14:41:35,187 [INFO]   Feature count  : 65
+2026-03-22 14:41:35,189 [INFO]   NaN rate       : 15.9% (handled per-fold)
+2026-03-22 14:41:35,189 [INFO] ============================================================
+2026-03-22 14:41:35,190 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-03-22 14:41:35,190 [INFO] ============================================================
+2026-03-22 14:41:39,143 [INFO]   EDA plots saved.
+2026-03-22 14:41:39,144 [INFO]   EDA plots saved.
+2026-03-22 14:41:39,144 [INFO] ============================================================
+2026-03-22 14:41:39,144 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-03-22 14:41:39,145 [INFO] ============================================================
+2026-03-22 14:41:39,351 [INFO]   Fold 5: skipping (single class in train)
+2026-03-22 14:41:39,355 [INFO]   Fold 6: skipping (single class in train)
+2026-03-22 14:41:39,375 [INFO]   Fold 7: train 2004â€“2010 | test 2011 | y=[1] | n_train=7 pos=1
+2026-03-22 14:41:39,414 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:41:39,416 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:41:39,417 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:41:39,437 [INFO]   Fold 8: train 2004â€“2011 | test 2012 | y=[1] | n_train=8 pos=2
+2026-03-22 14:41:39,470 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:41:39,473 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:41:39,475 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:41:39,498 [INFO]   Fold 9: train 2004â€“2012 | test 2013 | y=[1] | n_train=9 pos=3
+2026-03-22 14:41:44,986 [INFO]   Fold 10: train 2004â€“2013 | test 2014 | y=[1] | n_train=10 pos=4
+2026-03-22 14:41:50,262 [INFO]   Fold 11: train 2004â€“2014 | test 2015 | y=[1] | n_train=11 pos=5
+2026-03-22 14:41:55,545 [INFO]   Fold 12: train 2004â€“2015 | test 2016 | y=[1] | n_train=12 pos=6
+2026-03-22 14:42:01,064 [INFO]   Fold 13: train 2004â€“2016 | test 2017 | y=[1] | n_train=13 pos=7
+2026-03-22 14:42:06,402 [INFO]   Fold 14: train 2004â€“2017 | test 2018 | y=[1] | n_train=14 pos=8
+2026-03-22 14:42:11,812 [INFO]   Fold 15: train 2004â€“2018 | test 2019 | y=[1] | n_train=15 pos=9
+2026-03-22 14:42:17,127 [INFO]   Fold 16: train 2004â€“2019 | test 2020 | y=[1] | n_train=16 pos=10
+2026-03-22 14:42:22,601 [INFO]   Fold 17: train 2004â€“2020 | test 2021 | y=[1] | n_train=17 pos=11
+2026-03-22 14:42:28,185 [INFO]   Fold 18: train 2004â€“2021 | test 2022 | y=[1] | n_train=18 pos=12
+2026-03-22 14:42:33,521 [INFO]   Fold 19: train 2004â€“2022 | test 2023 | y=[1] | n_train=19 pos=13
+2026-03-22 14:42:38,919 [INFO]   Fold 20: train 2004â€“2023 | test 2024 | y=[1] | n_train=20 pos=14
+2026-03-22 14:42:44,427 [INFO]   Fold 21: train 2004â€“2024 | test 2025 | y=[1] | n_train=21 pos=15
+2026-03-22 14:42:49,691 [INFO]   Fold 22: train 2004â€“2025 | test 2026 | y=[1] | n_train=22 pos=16
+2026-03-22 14:42:54,984 [INFO]   Complete: 80 fold-model results
+2026-03-22 14:42:54,985 [INFO] ============================================================
+2026-03-22 14:42:54,985 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-03-22 14:42:54,985 [INFO] ============================================================
+2026-03-22 14:42:55,000 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_folds
+model                                                         
+ExtraTrees          0.0613    0.2620     1.0      NaN       16
+GradientBoosting    0.1465    0.4535     1.0      NaN       16
+LogisticRegression  0.0038    0.0547     1.0      NaN       16
+RandomForest        0.0729    0.2918     1.0      NaN       16
+RidgeClassifier     0.0044    0.0569     1.0      NaN       16
+2026-03-22 14:42:57,358 [INFO]   Model evaluation plots saved.
+2026-03-22 14:42:57,358 [INFO]   Model evaluation plots saved.
+2026-03-22 14:42:57,358 [INFO] ============================================================
+2026-03-22 14:42:57,359 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-03-22 14:42:57,359 [INFO] ============================================================
+2026-03-22 14:42:57,364 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-03-22 14:42:57,365 [INFO]   ----------------------------------------------------------------------
+2026-03-22 14:42:57,365 [INFO]   2017      0.813     [0.53-0.95]   0.426  [CRITICAL]    WIDE    BREACH
+2026-03-22 14:42:57,366 [INFO]   2018      0.839     [0.64-0.96]   0.319  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,366 [INFO]   2019      0.885     [0.83-0.96]   0.129  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,367 [INFO]   2020      0.898     [0.85-0.96]   0.113  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,367 [INFO]   2021      0.902     [0.86-0.96]   0.107  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,367 [INFO]   2022      0.893     [0.83-0.97]   0.132  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,367 [INFO]   2023      0.894     [0.83-0.97]   0.136  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,368 [INFO]   2024      0.884     [0.81-0.97]   0.157  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,368 [INFO]   2025      0.891     [0.82-0.97]   0.147  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,369 [INFO]   2026      0.860     [0.76-0.97]   0.214  [CRITICAL]       yes  BREACH
+2026-03-22 14:42:57,369 [INFO] 
+2026-03-22 14:42:57,369 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-03-22 14:42:57,369 [INFO]         Treat those years as directional signals only.
+2026-03-22 14:42:57,379 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-03-22 14:42:57,379 [INFO] Pipeline complete.
+2026-03-22 14:51:09,245 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-03-22 14:51:09,247 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-03-22 14:51:09,248 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 14:51:09,249 [INFO] ============================================================
+2026-03-22 14:51:09,249 [INFO] STAGE 1 -- Data Ingestion
+2026-03-22 14:51:09,260 [INFO] ============================================================
+2026-03-22 14:51:13,863 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 14:51:14,307 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 14:51:14,341 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 14:51:14,367 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 14:51:14,392 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 14:51:18,838 [INFO]   CSIS PDF: extracted via pypdf
+2026-03-22 14:51:18,879 [INFO]   CSIS: 218 incidents parsed from PDF
+2026-03-22 14:51:20,257 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-03-22 14:51:20,384 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 14:51:20,422 [INFO]   Combined: 19,290 unique records (dropped 1,324 duplicates from 20,614 raw rows)
+2026-03-22 14:51:20,426 [INFO]   Total records : 19,290
+2026-03-22 14:51:20,428 [INFO]   Crypto-related: 940
+2026-03-22 14:51:20,429 [INFO]   Year range    : 2004 - 2026
+2026-03-22 14:51:20,434 [INFO]   Sources       : {'CE': 15948, 'WA': 1506, 'HHS': 883, 'IIB': 416, 'DBN': 274, 'CSIS': 218, 'DBEN': 37, 'DF1': 8}
+2026-03-22 14:51:20,434 [INFO] ============================================================
+2026-03-22 14:51:20,435 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-03-22 14:51:20,435 [INFO] ============================================================
+2026-03-22 14:51:27,405 [INFO]   Label threshold (median crypto count): 36.0
+2026-03-22 14:51:27,406 [INFO]   Label distribution: {0: 12, 1: 11}
+2026-03-22 14:51:27,417 [INFO]   Dropping 19 highly correlated features
+2026-03-22 14:51:27,418 [INFO]   Feature matrix: (23, 38) | Positive rate: 0.48 | Features: 38
+2026-03-22 14:51:27,432 [INFO]   External: AI workforce dataset loaded
+2026-03-22 14:51:27,510 [INFO]   External: Market trend dataset loaded
+2026-03-22 14:51:27,531 [INFO]   External: World Bank dataset loaded
+2026-03-22 14:51:28,108 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 14:51:28,132 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 14:51:28,223 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 14:51:28,232 [INFO]   Dropped 17 redundant external features
+2026-03-22 14:51:28,235 [INFO]   Combined feature matrix: (23, 63) (base: 38, external: 54, NaN: 17.0%)
+2026-03-22 14:51:28,236 [INFO]   Feature matrix : (23, 63)
+2026-03-22 14:51:28,236 [INFO]   Positive rate  : 47.8%  (11/23 years)
+2026-03-22 14:51:28,237 [INFO]   Feature count  : 63
+2026-03-22 14:51:28,238 [INFO]   NaN rate       : 17.0% (handled per-fold)
+2026-03-22 14:51:28,238 [INFO] ============================================================
+2026-03-22 14:51:28,239 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-03-22 14:51:28,239 [INFO] ============================================================
+2026-03-22 14:51:31,228 [INFO]   EDA plots saved.
+2026-03-22 14:51:31,229 [INFO]   EDA plots saved.
+2026-03-22 14:51:31,229 [INFO] ============================================================
+2026-03-22 14:51:31,229 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-03-22 14:51:31,229 [INFO] ============================================================
+2026-03-22 14:51:31,899 [INFO]   Fold 5: skipping (single class in train)
+2026-03-22 14:51:31,900 [INFO]   Fold 6: skipping (single class in train)
+2026-03-22 14:51:31,901 [INFO]   Fold 7: skipping (single class in train)
+2026-03-22 14:51:31,903 [INFO]   Fold 8: skipping (single class in train)
+2026-03-22 14:51:31,903 [INFO]   Fold 9: skipping (single class in train)
+2026-03-22 14:51:31,904 [INFO]   Fold 10: skipping (single class in train)
+2026-03-22 14:51:31,905 [INFO]   Fold 11: skipping (single class in train)
+2026-03-22 14:51:31,936 [INFO]   Fold 12: train 2004-2015 | test 2016 | y=[1] | n_train=12 pos=1
+2026-03-22 14:51:31,957 [WARNING]   RandomForest failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:51:31,959 [WARNING]   ExtraTrees failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:51:31,960 [WARNING]   GradientBoosting failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:51:31,989 [INFO]   Fold 13: train 2004-2016 | test 2017 | y=[1] | n_train=13 pos=2
+2026-03-22 14:51:32,007 [WARNING]   RandomForest failed fold 13: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:51:32,008 [WARNING]   ExtraTrees failed fold 13: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:51:32,009 [WARNING]   GradientBoosting failed fold 13: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 14:51:32,035 [INFO]   Fold 14: train 2004-2017 | test 2018 | y=[1] | n_train=14 pos=3
+2026-03-22 14:51:37,450 [INFO]   Fold 15: train 2004-2018 | test 2019 | y=[1] | n_train=15 pos=4
+2026-03-22 14:51:42,881 [INFO]   Fold 16: train 2004-2019 | test 2020 | y=[1] | n_train=16 pos=5
+2026-03-22 14:51:48,138 [INFO]   Fold 17: train 2004-2020 | test 2021 | y=[1] | n_train=17 pos=6
+2026-03-22 14:51:53,230 [INFO]   Fold 18: train 2004-2021 | test 2022 | y=[1] | n_train=18 pos=7
+2026-03-22 14:51:58,162 [INFO]   Fold 19: train 2004-2022 | test 2023 | y=[1] | n_train=19 pos=8
+2026-03-22 14:52:03,368 [INFO]   Fold 20: train 2004-2023 | test 2024 | y=[1] | n_train=20 pos=9
+2026-03-22 14:52:08,175 [INFO]   Fold 21: train 2004-2024 | test 2025 | y=[1] | n_train=21 pos=10
+2026-03-22 14:52:13,128 [INFO]   Fold 22: train 2004-2025 | test 2026 | y=[0] | n_train=22 pos=11
+2026-03-22 14:52:17,993 [INFO]   Complete: 55 fold-model results
+2026-03-22 14:52:17,994 [INFO] ============================================================
+2026-03-22 14:52:17,994 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-03-22 14:52:17,994 [INFO] ============================================================
+2026-03-22 14:52:18,028 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_pos_test  n_neg_test  n_folds
+model                                                                                 
+LogisticRegression  0.0880    0.3215  0.9909      0.9          10           1       11
+RidgeClassifier     0.1389    0.4612  0.9909      0.9          10           1       11
+ExtraTrees          0.1536    0.4849  0.9582      0.6          10           1       11
+RandomForest        0.1547    0.4891  0.9707      0.7          10           1       11
+GradientBoosting    0.1944    0.5765  0.9441      0.5          10           1       11
+2026-03-22 14:52:20,477 [INFO]   Model evaluation plots saved.
+2026-03-22 14:52:20,478 [INFO]   Model evaluation plots saved.
+2026-03-22 14:52:20,478 [INFO] ============================================================
+2026-03-22 14:52:20,478 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-03-22 14:52:20,478 [INFO] ============================================================
+2026-03-22 14:52:20,489 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-03-22 14:52:20,490 [INFO]   ----------------------------------------------------------------------
+2026-03-22 14:52:20,490 [INFO]   2017      0.536     [0.50-0.62]   0.125  [ELEVATED]       yes  BREACH
+2026-03-22 14:52:20,491 [INFO]   2018      0.544     [0.28-0.77]   0.485  [ELEVATED]    WIDE    BREACH
+2026-03-22 14:52:20,491 [INFO]   2019      0.711     [0.63-0.86]   0.232  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,492 [INFO]   2020      0.696     [0.59-0.81]   0.226  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,492 [INFO]   2021      0.720     [0.65-0.80]   0.142  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,493 [INFO]   2022      0.749     [0.70-0.86]   0.167  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,493 [INFO]   2023      0.776     [0.73-0.89]   0.162  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,493 [INFO]   2024      0.752     [0.69-0.85]   0.160  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,494 [INFO]   2025      0.731     [0.64-0.78]   0.138  [HIGH]           yes  BREACH
+2026-03-22 14:52:20,494 [INFO]   2026      0.664     [0.61-0.73]   0.120  [HIGH]           yes        
+2026-03-22 14:52:20,494 [INFO] 
+2026-03-22 14:52:20,495 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-03-22 14:52:20,495 [INFO]         Treat those years as directional signals only.
+2026-03-22 14:52:20,506 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-03-22 14:52:20,506 [INFO] Pipeline complete.
+2026-03-22 15:07:25,859 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-03-22 15:07:25,860 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-03-22 15:07:25,861 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 15:07:25,861 [INFO] ============================================================
+2026-03-22 15:07:25,861 [INFO] STAGE 1 -- Data Ingestion
+2026-03-22 15:07:25,861 [INFO] ============================================================
+2026-03-22 15:07:27,627 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-03-22 15:07:28,046 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-03-22 15:07:28,077 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-03-22 15:07:28,103 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-03-22 15:07:28,128 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-03-22 15:07:32,326 [INFO]   CSIS PDF: extracted via pypdf
+2026-03-22 15:07:32,361 [INFO]   CSIS: 218 incidents parsed from PDF
+2026-03-22 15:07:33,752 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-03-22 15:07:33,871 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-03-22 15:07:33,897 [INFO]   Combined: 19,290 unique records (dropped 1,324 duplicates from 20,614 raw rows)
+2026-03-22 15:07:33,901 [INFO]   Total records : 19,290
+2026-03-22 15:07:33,903 [INFO]   Crypto-related: 940
+2026-03-22 15:07:33,904 [INFO]   Year range    : 2004 - 2026
+2026-03-22 15:07:33,908 [INFO]   Sources       : {'CE': 15948, 'WA': 1506, 'HHS': 883, 'IIB': 416, 'DBN': 274, 'CSIS': 218, 'DBEN': 37, 'DF1': 8}
+2026-03-22 15:07:33,908 [INFO] ============================================================
+2026-03-22 15:07:33,908 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-03-22 15:07:33,908 [INFO] ============================================================
+2026-03-22 15:07:36,199 [INFO]   Label: crypto_fraction median split (threshold=0.0358)
+2026-03-22 15:07:36,201 [INFO]   Label distribution: {0: 12, 1: 11}
+2026-03-22 15:07:36,213 [INFO]   Dropping 19 highly correlated features
+2026-03-22 15:07:36,214 [INFO]   Feature matrix: (23, 38) | Positive rate: 0.48 | Features: 38
+2026-03-22 15:07:36,231 [INFO]   External: AI workforce dataset loaded
+2026-03-22 15:07:36,314 [INFO]   External: Market trend dataset loaded
+2026-03-22 15:07:36,335 [INFO]   External: World Bank dataset loaded
+2026-03-22 15:07:36,902 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-03-22 15:07:36,922 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-03-22 15:07:37,020 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-03-22 15:07:37,032 [INFO]   Dropped 17 redundant external features
+2026-03-22 15:07:37,033 [INFO]   Combined feature matrix: (23, 63) (base: 38, external: 54, NaN: 17.0%)
+2026-03-22 15:07:37,034 [INFO]   Feature matrix : (23, 63)
+2026-03-22 15:07:37,034 [INFO]   Positive rate  : 47.8%  (11/23 years)
+2026-03-22 15:07:37,034 [INFO]   Feature count  : 63
+2026-03-22 15:07:37,035 [INFO]   NaN rate       : 17.0% (handled per-fold)
+2026-03-22 15:07:37,035 [INFO] ============================================================
+2026-03-22 15:07:37,036 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-03-22 15:07:37,036 [INFO] ============================================================
+2026-03-22 15:07:39,111 [INFO]   EDA plots saved.
+2026-03-22 15:07:39,112 [INFO]   EDA plots saved.
+2026-03-22 15:07:39,112 [INFO] ============================================================
+2026-03-22 15:07:39,113 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-03-22 15:07:39,113 [INFO] ============================================================
+2026-03-22 15:07:39,354 [INFO]   Fold 5: skipping (single class in train)
+2026-03-22 15:07:39,356 [INFO]   Fold 6: skipping (single class in train)
+2026-03-22 15:07:39,385 [INFO]   Fold 7: train 2004-2010 | test 2011 | y=[0] | n_train=7 pos=1
+2026-03-22 15:07:39,419 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,422 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,423 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,451 [INFO]   Fold 8: train 2004-2011 | test 2012 | y=[0] | n_train=8 pos=1
+2026-03-22 15:07:39,471 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,473 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,474 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,502 [INFO]   Fold 9: train 2004-2012 | test 2013 | y=[0] | n_train=9 pos=1
+2026-03-22 15:07:39,523 [WARNING]   RandomForest failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,525 [WARNING]   ExtraTrees failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,526 [WARNING]   GradientBoosting failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,553 [INFO]   Fold 10: train 2004-2013 | test 2014 | y=[0] | n_train=10 pos=1
+2026-03-22 15:07:39,572 [WARNING]   RandomForest failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,573 [WARNING]   ExtraTrees failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,574 [WARNING]   GradientBoosting failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,669 [INFO]   Fold 11: train 2004-2014 | test 2015 | y=[1] | n_train=11 pos=1
+2026-03-22 15:07:39,689 [WARNING]   RandomForest failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,691 [WARNING]   ExtraTrees failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,692 [WARNING]   GradientBoosting failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,718 [INFO]   Fold 12: train 2004-2015 | test 2016 | y=[1] | n_train=12 pos=2
+2026-03-22 15:07:39,736 [WARNING]   RandomForest failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,739 [WARNING]   ExtraTrees failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,740 [WARNING]   GradientBoosting failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-03-22 15:07:39,768 [INFO]   Fold 13: train 2004-2016 | test 2017 | y=[1] | n_train=13 pos=3
+2026-03-22 15:07:44,739 [INFO]   Fold 14: train 2004-2017 | test 2018 | y=[1] | n_train=14 pos=4
+2026-03-22 15:07:49,656 [INFO]   Fold 15: train 2004-2018 | test 2019 | y=[0] | n_train=15 pos=5
+2026-03-22 15:07:54,835 [INFO]   Fold 16: train 2004-2019 | test 2020 | y=[1] | n_train=16 pos=5
+2026-03-22 15:07:59,805 [INFO]   Fold 17: train 2004-2020 | test 2021 | y=[0] | n_train=17 pos=6
+2026-03-22 15:08:04,817 [INFO]   Fold 18: train 2004-2021 | test 2022 | y=[1] | n_train=18 pos=6
+2026-03-22 15:08:09,812 [INFO]   Fold 19: train 2004-2022 | test 2023 | y=[1] | n_train=19 pos=7
+2026-03-22 15:08:14,790 [INFO]   Fold 20: train 2004-2023 | test 2024 | y=[1] | n_train=20 pos=8
+2026-03-22 15:08:19,705 [INFO]   Fold 21: train 2004-2024 | test 2025 | y=[1] | n_train=21 pos=9
+2026-03-22 15:08:24,926 [INFO]   Fold 22: train 2004-2025 | test 2026 | y=[1] | n_train=22 pos=10
+2026-03-22 15:08:29,892 [INFO]   Complete: 80 fold-model results
+2026-03-22 15:08:29,892 [INFO] ============================================================
+2026-03-22 15:08:29,893 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-03-22 15:08:29,893 [INFO] ============================================================
+2026-03-22 15:08:29,918 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_pos_test  n_neg_test  n_folds
+model                                                                                 
+RidgeClassifier     0.2035    0.5937  0.7788   0.6667          10           6       16
+LogisticRegression  0.2082    0.5900  0.7505   0.6333          10           6       16
+ExtraTrees          0.2199    0.6320  0.8499   0.7167          10           6       16
+GradientBoosting    0.2437    0.6816  0.7883   0.6167          10           6       16
+RandomForest        0.2485    0.6987  0.8313   0.6833          10           6       16
+2026-03-22 15:08:32,525 [INFO]   Model evaluation plots saved.
+2026-03-22 15:08:32,526 [INFO]   Model evaluation plots saved.
+2026-03-22 15:08:32,526 [INFO] ============================================================
+2026-03-22 15:08:32,526 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-03-22 15:08:32,526 [INFO] ============================================================
+2026-03-22 15:08:32,532 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-03-22 15:08:32,532 [INFO]   ----------------------------------------------------------------------
+2026-03-22 15:08:32,533 [INFO]   2017      0.388     [0.21-0.51]   0.302  [LOW]            yes  BREACH
+2026-03-22 15:08:32,534 [INFO]   2018      0.486     [0.26-0.80]   0.535  [ELEVATED]    WIDE    BREACH
+2026-03-22 15:08:32,534 [INFO]   2019      0.509     [0.36-0.74]   0.379  [ELEVATED]       yes        
+2026-03-22 15:08:32,535 [INFO]   2020      0.664     [0.45-0.84]   0.396  [HIGH]           yes  BREACH
+2026-03-22 15:08:32,535 [INFO]   2021      0.581     [0.53-0.63]   0.100  [ELEVATED]       yes        
+2026-03-22 15:08:32,536 [INFO]   2022      0.590     [0.53-0.65]   0.122  [ELEVATED]       yes  BREACH
+2026-03-22 15:08:32,537 [INFO]   2023      0.612     [0.57-0.67]   0.104  [HIGH]           yes  BREACH
+2026-03-22 15:08:32,537 [INFO]   2024      0.674     [0.61-0.74]   0.123  [HIGH]           yes  BREACH
+2026-03-22 15:08:32,538 [INFO]   2025      0.571     [0.54-0.60]   0.056  [ELEVATED]       yes  BREACH
+2026-03-22 15:08:32,539 [INFO]   2026      0.583     [0.51-0.65]   0.135  [ELEVATED]       yes  BREACH
+2026-03-22 15:08:32,540 [INFO] 
+2026-03-22 15:08:32,540 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-03-22 15:08:32,540 [INFO]         Treat those years as directional signals only.
+2026-03-22 15:08:32,551 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-03-22 15:08:32,552 [INFO] Pipeline complete.

@@ -4,24 +4,24 @@ evaluation.py
 All evaluation metrics, plots, and report generation.
 
 Metrics (Section 5.3 of the proposal):
-  • Brier Score    – calibration of probabilistic output
-  • Log Loss       – penalises overconfident wrong predictions
-  • PR-AUC         – best for rare / imbalanced events
-  • ROC-AUC        – overall discrimination ability
+  ? Brier Score    - calibration of probabilistic output
+  ? Log Loss       - penalises overconfident wrong predictions
+  ? PR-AUC         - best for rare / imbalanced events
+  ? ROC-AUC        - overall discrimination ability
 
 Plots generated (saved to outputs/):
-  01_dataset_overview.png          – breach counts by year and source
-  02_sector_distribution.png       – sector pie / bar across all years
-  03_method_distribution.png       – attack method breakdown
-  04_crypto_vs_all.png             – crypto vs non-crypto breaches over time
-  05_records_over_time.png         – records exposed per year (log scale)
-  06_model_comparison.png          – mean metrics across models
-  07_pr_curves.png                 – precision-recall curves per model
-  08_probability_timeline.png      – predicted risk probability per year
-  09_feature_importance.png        – top features (RF + GBM)
-  10_calibration.png               – reliability diagram per model
-  11_confusion_matrix_heatmap.png  – threshold-based confusion matrices
-  12_brier_logloss_by_fold.png     – per-fold metric evolution
+  01_dataset_overview.png          - breach counts by year and source
+  02_sector_distribution.png       - sector pie / bar across all years
+  03_method_distribution.png       - attack method breakdown
+  04_crypto_vs_all.png             - crypto vs non-crypto breaches over time
+  05_records_over_time.png         - records exposed per year (log scale)
+  06_model_comparison.png          - mean metrics across models
+  07_pr_curves.png                 - precision-recall curves per model
+  08_probability_timeline.png      - predicted risk probability per year
+  09_feature_importance.png        - top features (RF + GBM)
+  10_calibration.png               - reliability diagram per model
+  11_confusion_matrix_heatmap.png  - threshold-based confusion matrices
+  12_brier_logloss_by_fold.png     - per-fold metric evolution
 """
 
 import os
@@ -49,9 +49,9 @@ PALETTE = [
     "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
 ]
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 1–5: EDA plots (use the raw unified DataFrame)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# 1-5: EDA plots (use the raw unified DataFrame)
+# -----------------------------------------------------------------------------
 
 def plot_eda(df: pd.DataFrame, yearly_df: pd.DataFrame, out_dir: str = "outputs"):
     os.makedirs(out_dir, exist_ok=True)
@@ -162,9 +162,9 @@ def _plot_05_records(yr_df, out_dir):
     plt.close()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 6–12: Model evaluation plots
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# 6-12: Model evaluation plots
+# -----------------------------------------------------------------------------
 
 def plot_model_results(wfv, out_dir: str = "outputs"):
     os.makedirs(out_dir, exist_ok=True)
@@ -187,7 +187,7 @@ def plot_model_results(wfv, out_dir: str = "outputs"):
 
 def _plot_06_model_comparison(summary, out_dir):
     metrics = ["pr_auc", "roc_auc", "brier", "log_loss"]
-    titles  = ["PR-AUC ↑", "ROC-AUC ↑", "Brier Score ↓", "Log-Loss ↓"]
+    titles  = ["PR-AUC  (higher better)", "ROC-AUC  (higher better)", "Brier Score  (lower better)", "Log-Loss  (lower better)"]
 
     fig, axes = plt.subplots(1, 4, figsize=(16, 5))
     fig.suptitle("Model Comparison (Walk-Forward Mean)", fontsize=13, fontweight="bold")
@@ -362,11 +362,11 @@ def _plot_12_fold_metrics(wfv, out_dir):
         axes[0].plot(grp_s["test_year"], grp_s["brier"],
                      marker="o", linewidth=1.5, markersize=4,
                      color=PALETTE[i % len(PALETTE)], label=mname, alpha=0.85)
-    axes[0].set_title("Brier Score per Fold (↓ better)", fontweight="bold")
+    axes[0].set_title("Brier Score per Fold ( (lower better) better)", fontweight="bold")
     axes[0].set_ylabel("Brier Score"); axes[0].set_xlabel("Test Year")
     axes[0].grid(alpha=0.3); axes[0].legend(fontsize=7)
 
-    # Right: Cumulative (rolling) PR-AUC — pools all predictions up to each year
+    # Right: Cumulative (rolling) PR-AUC -- pools all predictions up to each year
     # This fixes the NaN problem: single-sample folds contribute to the running pool
     from sklearn.metrics import average_precision_score
     preds_df = wfv.consolidated_predictions()
@@ -389,9 +389,16 @@ def _plot_12_fold_metrics(wfv, out_dir):
                              markersize=4, color=PALETTE[i % len(PALETTE)],
                              label=mname, alpha=0.85)
 
-    axes[1].set_title("Cumulative PR-AUC Over Time (↑ better)", fontweight="bold")
+    axes[1].set_title("Cumulative PR-AUC Over Time ( (higher better) better)", fontweight="bold")
     axes[1].set_ylabel("Cumulative PR-AUC"); axes[1].set_xlabel("Test Year")
     axes[1].set_ylim(0, 1.05)
+    # Explicitly constrain x-axis to actual test year range to prevent
+    # matplotlib auto-scaling to a 200-year range when few points exist
+    all_test_years = sorted(preds_df["year"].unique()) if not preds_df.empty else []
+    if len(all_test_years) >= 2:
+        axes[1].set_xlim(all_test_years[0] - 1, all_test_years[-1] + 1)
+        axes[1].xaxis.set_major_locator(
+            __import__("matplotlib.ticker", fromlist=["MaxNLocator"]).MaxNLocator(integer=True))
     axes[1].grid(alpha=0.3); axes[1].legend(fontsize=7)
 
     plt.tight_layout()
@@ -399,16 +406,16 @@ def _plot_12_fold_metrics(wfv, out_dir):
     plt.close()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # Metric helpers (standalone)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def brier_score(y_true: np.ndarray, y_prob: np.ndarray) -> float:
-    """BS = 1/N * Σ(F_t - O_t)^2"""
+    """BS = 1/N * ?(F_t - O_t)^2"""
     return float(np.mean((y_prob - y_true) ** 2))
 
 
 def log_loss_manual(y_true: np.ndarray, y_prob: np.ndarray, eps=1e-15) -> float:
-    """LogLoss = -1/N * Σ[O*log(F) + (1-O)*log(1-F)]"""
+    """LogLoss = -1/N * ?[O*log(F) + (1-O)*log(1-F)]"""
     p = np.clip(y_prob, eps, 1 - eps)
     return -float(np.mean(y_true * np.log(p) + (1 - y_true) * np.log(1 - p)))
