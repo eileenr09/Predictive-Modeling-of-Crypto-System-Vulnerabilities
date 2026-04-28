@@ -6,244 +6,283 @@
 
 ## Project Overview
 
-This project builds a probabilistic machine learning pipeline to predict whether a
-given year will be a **high crypto-breach-fraction year** -- defined as a year in
-which crypto-related incidents make up an above-median share of all cyber breaches.
-The model is trained on **19,281 unique breach records** spanning 2004-2026 from
-eight harmonised data sources, using walk-forward time-series cross-validation so
-that every prediction is made with only historically available data.
+This project builds a probabilistic machine learning pipeline to predict whether a given year will be a **high crypto-breach-fraction year** — defined as a year in which crypto-related incidents make up an above-median share of all cyber breaches. The model is trained on **19,964 unified breach records** spanning 2004–2026 from eight harmonised data sources, using walk-forward time-series cross-validation so that every prediction is made with only historically available data.
+
+The pipeline can be run end-to-end via `main.py` or explored interactively via the Jupyter notebook `Crypto_Breach_ML_Pipeline.ipynb`.
+
+---
+
+## Repository Structure
+
+```
+crypto_ml_project/
+├── Crypto_Breach_ML_Pipeline.ipynb   # Interactive notebook (full pipeline + dashboards)
+├── main.py                           # CLI entry point (runs all stages)
+├── data_ingestion.py                 # Source loading, normalisation, deduplication
+├── feature_engineering.py            # Feature matrix construction (37 features)
+├── models.py                         # Walk-forward validator + 5 calibrated models
+├── evaluation.py                     # Plots 01–12 saved to outputs/
+├── generate_notebook.py              # Utility to regenerate the notebook scaffold
+├── external_data.py                  # External signal helpers (VIX, WA, CE)
+├── data/                             # Raw source files (not tracked in git)
+└── outputs/                          # All generated PNGs, CSVs, and model artefacts
+    ├── 01_dataset_overview.png
+    ├── 02_sector_distribution.png
+    ├── 03_method_distribution.png
+    ├── 04_crypto_vs_all.png
+    ├── 05_records_over_time.png
+    ├── 06_model_comparison.png
+    ├── 07_pr_curves.png
+    ├── 08_probability_timeline.png
+    ├── 09_feature_importance.png
+    ├── 10_calibration.png
+    ├── 11_confusion_matrix_heatmap.png
+    ├── 12_brier_logloss_by_fold.png
+    ├── executive_summary_dashboard.png
+    ├── dashboard_threat_intelligence.png
+    ├── dashboard_model_comparison.png
+    ├── dashboard_prediction_audit.png
+    ├── ensemble_forecast.csv
+    └── model_artefacts.pkl
+```
 
 ---
 
 ## Data
 
-### Scale
+### Sources (19,964 records total)
 
-| Source | Raw Rows | After Dedup | Coverage | Description |
-|--------|----------|-------------|----------|-------------|
-| Information is Beautiful (IIB) | 417 | ~400 | 2004-2022 | High-profile global breaches, entity name, sector, method |
-| HHS / OCR Healthcare (HHS) | 908 | ~860 | 2009-2026 | US healthcare breach portal, fine-grained breach type |
-| DataBreachN (DBN) | 389 | ~370 | 2004-2020 | International country-level breach list |
-| DataBreach EU (DBEN) | 270 | ~265 | 2004-2017 | European breach registry |
-| Wikipedia Extended (DF1) | 349 | ~330 | 2004-2020 | Broad entity, year, records, method |
-| CSIS Cyber Incidents (CSIS) | 207 | ~190 | 2006-2026 | State-sponsored and significant incidents (PDF, text-mined) |
-| Cyber Events Database (CE) | 16,532 | ~16,048 | 2014-2026 | Structured incident database: 12,234 criminal, 2,151 hacktivist, 1,125 nation-state actors; 8,541 exploitive events |
-| WA Breach Notifications (WA) | 1,533 | ~1,506 | 2016-2026 | Washington State AG notifications: 539 ransomware, 224 malware, 105 phishing; 46.9M Washingtonians affected |
-| **Total** | **20,605** | **~19,281** | **2004-2026** | |
+| Source ID | File | Records | Coverage | Description |
+|-----------|------|---------|----------|-------------|
+| CE | `cyber_events_2026-03-22.csv` | 15,949 | 2014–2026 | Structured incident database — criminal, hacktivist, nation-state actors |
+| WA | `Data_Breach_Notifications_Affecting_Washington_Residents.csv` | 1,506 | 2016–2026 | Washington State AG breach notifications |
+| HHS | `Cyber_Security_Breaches.csv` | 883 | 2009–2026 | US HHS/OCR healthcare breach portal |
+| DHL | `defi_hack_labs.csv` | 685 | 2014–2026 | DeFi protocol exploits and smart contract attacks |
+| IIB | `Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv` | 416 | 2004–2022 | Information is Beautiful: high-profile global breaches |
+| DBN | `Data_BreachesN_new.csv` | 273 | 2004–2020 | International country-level breach list |
+| CSIS | `260306_Cyber_Events.pdf` | 207 | 2006–2026 | CSIS significant cyber incidents (text-mined from PDF) |
+| DBEN | `Data_Breaches_EN_V2_2004_2017_20180220.csv` | 37 | 2004–2017 | European breach registry |
+| DF1 | `df_1.csv` | 8 | 2004–2020 | Wikipedia-derived breach supplement |
+| **Total** | | **19,964** | **2004–2026** | |
 
-De-duplication uses (entity, year, method_category) as the key. The 1,324 dropped
-rows are genuine cross-source overlaps, primarily between the three Wikipedia-derived
-sources (DBN, DF1, DBEN) and the IIB dataset.
+De-duplication uses `(entity, year, method_category)` as the composite key. Cross-source overlaps (primarily between IIB, DBN, DBEN, and DF1) are dropped.
 
 ### Crypto Coverage
 
-- **633 crypto-tagged events** in the CE dataset (2014-2026)
-- **940 total crypto-flagged records** across all sources combined
-- Crypto fraction of all breaches ranges from 0% (2004-2008) to ~12% (2026)
-- 30 crypto keywords used for flagging: bitcoin, ethereum, defi, nft, wallet, exchange, blockchain, web3, dex, cex, uniswap, binance, coinbase, and others
+- **1,650 crypto-tagged records** — 8.3% of all ingested incidents
+- Crypto fraction ranges from 0% (2004–2009) to ~18% (2024)
+- Year range: 2004–2026 (23 annual observations)
+- **11 of 23 years** classified as positive (high crypto-breach-fraction): 47.83% base rate
 
-### Sector Breakdown (from 19,281 records)
+### Sectors
 
-Government (4,370), Tech/Web (3,911), Healthcare (3,452), Financial (1,844),
-Academic (1,568), Other (1,339), Retail (1,040), Transport (543), Media (457),
-Energy (374)
+`tech_web`, `financial`, `government`, `healthcare`, `retail`, `academic`, `social_media`, `gaming`, `energy`, `media`, `legal`, `telecom`, `transport`, `other`, `unknown`
 
-### Attack Method Breakdown
+### Attack Method Categories
 
-Hacking (7,253), Malware (5,293), Phishing (2,038), DDoS (1,882), Other (1,287),
-Lost/Stolen Device (818), Unauthorized Access (439), Poor Security (180),
-Insider (53), Supply Chain (24)
+`hacking`, `malware`, `phishing`, `ddos`, `poor_security`, `unauthorized_access`, `insider`, `lost_device`, `smart_contract_exploit`, `supply_chain`, `other`
 
 ---
 
 ## Quick Start
 
+### Run the full pipeline (CLI)
+
 ```bash
 pip install -r requirements.txt
-python main.py                              # default: data/ directory
+python main.py                              # uses data/ directory, outputs to outputs/
 python main.py --data_dir /path/to/data
-python main.py --target high_impact        # alternative target
+python main.py --target high_impact        # alternative prediction target
+python main.py --out_dir my_outputs
 ```
 
-**Prediction targets:**
+### Run the interactive notebook
+
+```bash
+jupyter notebook Crypto_Breach_ML_Pipeline.ipynb
+```
+
+Run all cells top-to-bottom. The notebook mirrors the CLI pipeline and adds visualisation sections 2A–8C plus four dashboards.
+
+### Prediction targets
 
 | Flag | Definition |
 |------|------------|
-| `crypto_binary` | Was crypto fraction above median this year? (default) |
-| `high_impact` | Did total records breached exceed 75th percentile? |
+| `crypto_binary` | Was crypto fraction above the series median this year? (default) |
+| `high_impact` | Did total records breached exceed the 75th percentile? |
 | `crypto_count` | Regression: raw annual crypto breach count |
 
 ---
 
 ## Pipeline
 
-### Stage 1 -- Ingestion (`data_ingestion.py`)
+### Stage 1 — Data Ingestion (`data_ingestion.py`)
 
-All eight sources are normalised to a canonical schema:
-`year, entity, sector, method_category, records_affected, is_crypto, source_id`
+All sources are normalised to a canonical schema:
+`year · entity · sector · method_category · records_affected · is_crypto · source_id`
 
-The CE and WA files are searched in `data/` first, then a fallback path
-automatically, so they work without copying files manually. Records with malformed
-counts (e.g. `15,000,000`, `1.37e+09`, `3m`, `15.000.000`) are parsed correctly.
+- Malformed record counts (`15,000,000`, `1.37e+09`, `3m`, `15.000.000`) are parsed correctly
+- CE and WA source files are located automatically — searched in `data/` first, then a fallback upload path
+- Crypto flagging uses 30+ keywords: `bitcoin`, `ethereum`, `defi`, `nft`, `wallet`, `exchange`, `blockchain`, `web3`, `dex`, `cex`, `uniswap`, `binance`, `coinbase`, and others
 
-### Stage 2 -- Feature Engineering (`feature_engineering.py`)
+### Stage 2 — Feature Engineering (`feature_engineering.py`)
 
-**~65 features built from yearly aggregates:**
+**37 features** built from yearly aggregates (reduced from ~65 via variance/correlation pruning):
 
-- Core counts: total breaches, log-records, unique entities and methods
-- Sector fractions: 8 sectors as annual shares (government, tech_web, healthcare, ...)
-- Method fractions: 10 attack type shares (hacking, malware, phishing, ...)
-- Lag features: 1-, 2-, 3-year lags on key indicators
-- Rolling means: 2- and 3-year windows using shift(1) before rolling to prevent
-  look-ahead leakage (year T's rolling mean only uses T-3 to T-1)
-- Trend signals: year-over-year delta, rising/falling binary, 3-year linear slope
-- Interaction terms: hacking x financial sector, crypto momentum
-- External lag-1 signals from CE and WA (nation-state fraction, ransomware rate, etc.)
+| Category | Features |
+|----------|---------|
+| Core counts | `log_records_total`, `mean_records`, `unique_entities`, `unique_methods`, `source_diversity`, `large_breach_count` |
+| Sector fractions | Annual share per sector (financial, government, healthcare, …) |
+| Method fractions | Annual share per attack type (hacking, malware, phishing, …) |
+| Crypto signals | `crypto_breach_count`, `crypto_fraction`, `crypto_log_records`, `crypto_momentum` |
+| Lag features | 1-, 2-, 3-year lags on key indicators |
+| Rolling means | 2- and 3-year windows using `shift(1)` before rolling — prevents look-ahead leakage |
+| Trend signals | YoY delta, rising/falling binary (`_rising`), 3-year linear slope |
 
-**Label definition for `crypto_binary`:**
+**Label definition (`crypto_binary`):**
+The target is 1 if `crypto_fraction` (crypto breaches / total breaches) exceeds the series median, 0 otherwise. Fraction is used instead of raw count because the CE dataset contributes ~16,000 rows uniformly across 2014–2026, making every modern year a trivial positive on raw count. The fraction-based split produces 11 positives and 12 negatives spread across both early (2004–2013) and recent (2017, 2019) years, making PR-AUC and ROC-AUC genuinely discriminative.
 
-The label is 1 if `crypto_fraction` (crypto breaches / total breaches) exceeds the
-series median, 0 otherwise.
+### Stage 3 — Walk-Forward Validation (`models.py`)
 
-This uses fraction rather than raw count for a critical reason: the CE dataset
-contributes 16,532 rows uniformly across 2014-2026, pushing raw crypto counts to
-60-300 for every modern year. A median split on raw count puts the threshold at ~55,
-which every year from 2014 onward exceeds -- leaving only 2026 (partial year data)
-as a negative. With just 1 negative in 11 test folds, PR-AUC=1.0 is trivially
-achieved by any model that ranks that one year last. That score is meaningless.
-
-Crypto fraction divides by total breaches, so it stays meaningful even after adding
-16,532 CE rows. The fraction varies between 4-12% year-to-year in modern years
-(reflecting genuine variation in how intensely crypto was targeted). The median split
-on fraction produces approximately 11-12 positives and 11-12 negatives, with
-negatives spread across both early years (2004-2013) and recent years (2017, 2019,
-2025). This gives the model a genuinely hard problem and makes PR-AUC and ROC-AUC
-real discriminative measures.
-
-### Stage 3 -- Walk-Forward Validation (`models.py`)
+Expanding-window time-series cross-validation with `min_train_size=5`:
 
 ```
-Fold  5: Train 2004-2008 -> Test 2009
-Fold  6: Train 2004-2009 -> Test 2010
+Fold  5: Train 2004–2008  →  Test 2009
+Fold  6: Train 2004–2009  →  Test 2010
    ...
-Fold 22: Train 2004-2025 -> Test 2026
+Fold 22: Train 2004–2025  →  Test 2026
 ```
 
-**Per-fold leak prevention (applied before any model.fit() call):**
+**80 total fold-model combinations** (16 folds × 5 models).
 
-1. NaN imputation using the training fold median only (external features start in
-   2014/2016 so early folds have NaN for those columns)
-2. StandardScaler fit on training data only, then applied to the test row
+**Per-fold leak prevention applied before every `fit()` call:**
+1. NaN imputation using training-fold median only (CE/WA features start in 2014/2016; earlier folds have NaN for those columns)
+2. `StandardScaler` fit on training data only, then applied to the single test row
 
-**Models and calibration:**
+**Models:**
 
-| Model | Calibration | Purpose |
-|-------|-------------|---------|
-| LogisticRegression (L2, C=0.05) | Native softmax | Primary linear baseline |
-| RidgeClassifier (L2, C=0.01) | Native softmax | Stronger regularisation |
-| Random Forest (max_depth=3) | Platt sigmoid cv=3 | Bagged trees, shallow |
-| Extra Trees (max_depth=3) | Platt sigmoid cv=3 | More randomised than RF |
-| Gradient Boosting (depth=2, lr=0.02) | Platt sigmoid cv=3 | Conservative boosting |
+| Model | Hyperparameters | Calibration |
+|-------|----------------|-------------|
+| LogisticRegression | L2, C=0.10, `class_weight=balanced` | Native (softmax) |
+| RidgeClassifier | L2, C=0.05, `class_weight=balanced` | Native (softmax) |
+| RandomForest | 1,000 trees, `max_depth=4`, `min_samples_leaf=2`, `max_features=sqrt` | Platt sigmoid, cv=3 |
+| ExtraTrees | 1,000 trees, `max_depth=4`, `min_samples_leaf=2`, `max_features=sqrt` | Platt sigmoid, cv=3 |
+| GradientBoosting | 300 estimators, `max_depth=2`, `learning_rate=0.03` | Platt sigmoid, cv=3 |
 
-Tree models are Platt-calibrated because raw leaf-fraction probabilities cluster near
-0 and 1. A single overconfident miss (p=0.03 when y=1) adds -log(0.03) = 3.5 to
-log-loss -- at N=22 that alone raises the mean by 0.16. Sigmoid calibration is used
-over isotonic because isotonic overfits at N < 40 samples per calibration fold.
+All tree models are wrapped in `SelectKBest(f_classif, k=35)` before the classifier. Platt (sigmoid) calibration is used over isotonic because isotonic overfits at N < 40 samples per calibration fold. Label smoothing (`eps=0.05`) blends predictions toward the training base rate to cap per-sample log-loss contribution.
 
-Label smoothing (eps=0.10) is applied after predict_proba:
-`p_final = 0.9 * p_raw + 0.1 * base_rate`
-This caps the maximum per-sample log-loss contribution regardless of model confidence.
+Feature importances are extracted by averaging across all calibration folds via `_extract_fi_from_model()`.
 
-### Stage 4 -- Evaluation and Outputs
+### Stage 4 — Evaluation (`evaluation.py`)
 
-**Metrics reported per model (pooled across all folds):**
-
-| Metric | Best model (LogisticRegression) | Notes |
-|--------|--------------------------------|-------|
-| Brier Score | 0.088 | Lower is better; 0.25 = random |
-| Log-Loss | 0.322 | Lower is better; 0.693 = random |
-| PR-AUC | 0.991* | Higher is better |
-| ROC-AUC | 0.900 | Higher is better |
-
-*Note: PR-AUC values above 0.95 should be verified. Before the label fix (crypto_count
-median split), PR-AUC was a trivial 1.0 because only 1 negative appeared in all test
-folds. The current values use the crypto_fraction label which produces ~8 negative test
-folds spread across different years. If PR-AUC is still 1.0 after this fix, check
-`n_neg_test` in the summary output -- it should be > 3.
-
-**Top predictive features (GradientBoosting):**
-
-1. ext_vix_mean -- market volatility index (annual mean)
-2. ext_economic_stress -- composite macro stress indicator
-3. ext_current_account -- balance of payments signal
-4. method_lost_device -- lost/stolen device fraction
-5. log_records_total_lag3 -- log total records breached, 3-year lag
-6. crypto_log_records_lag2 -- log crypto records, 2-year lag
-7. log_records_total_lag2
-8. total_breaches_lag3
-9. crypto_log_records_lag1
-10. log_records_total (current year)
-
-**Ensemble forecast (most recent test years):**
-
-| Year | p(high-fraction) | Range | Tier | Correct? |
-|------|-----------------|-------|------|---------|
-| 2019 | 0.711 | [0.63-0.86] | HIGH | Yes |
-| 2020 | 0.696 | [0.59-0.81] | HIGH | Yes |
-| 2021 | 0.720 | [0.65-0.80] | HIGH | Yes |
-| 2022 | 0.749 | [0.70-0.86] | HIGH | Yes |
-| 2023 | 0.776 | [0.73-0.89] | HIGH | Yes |
-| 2024 | 0.752 | [0.69-0.85] | HIGH | Yes |
-| 2025 | 0.731 | [0.64-0.78] | HIGH | Yes |
-| 2026 | 0.664 | [0.61-0.73] | HIGH | Incorrect (actual=low) |
-
-2026 is the most challenging year: it is a partial-year observation (CE data through
-March 2026 only) with a genuinely low crypto fraction (11.7%), yet all models predict
-HIGH. This is partly a recency bias from training on the high-fraction years of 2021-2023.
-
-**Risk tiers:**
-
-| Tier | Probability | Posture |
-|------|-------------|---------|
-| [CRITICAL] | >= 80% | Incident response readiness |
-| [HIGH] | 60-80% | Active defence posture |
-| [ELEVATED] | 40-60% | Enhanced vigilance |
-| [LOW] | < 40% | Routine monitoring |
+Saves 12 plots to `outputs/` covering EDA (01–05) and model evaluation (06–12). See the outputs table in the repository structure above.
 
 ---
 
-## Key Findings
+## Results
 
-- **19,281 unique breach records** across 23 years (2004-2026), an 10x increase
-  over the original six sources alone (which provided ~1,825 records)
-- **940 crypto-tagged incidents** (4.9% of total), up from 61 in the original dataset
-- Crypto fraction grew from 0% (2004-2008) to a peak of ~12% in 2026 (partial year)
-- The most predictive features are macroeconomic (VIX, economic stress, current
-  account balance), not breach-specific -- suggesting crypto targeting correlates with
-  broader financial instability
-- Hacking (7,253 incidents) and Malware (5,293) dominate attack methods; ransomware
-  grew from <1% of WA cyberattacks in 2017 to 52% by 2026
-- Nation-state actors account for 1,125 incidents (6.8% of CE events), with their
-  share rising from 1% in 2014 to 13% in 2026
-- LogisticRegression is the best overall model: Brier=0.088, Log-Loss=0.322,
-  ROC-AUC=0.900 -- consistently outperforming tree models on this small-N time series
+### Model Performance (walk-forward, all 16 test folds)
+
+| Model | Brier ↓ | Log-Loss ↓ | PR-AUC ↑ | ROC-AUC ↑ | Pos folds | Neg folds |
+|-------|---------|-----------|---------|---------|-----------|-----------|
+| **RandomForest** | **0.1887** | **0.5738** | 0.8883 | 0.7333 | 10 | 6 |
+| ExtraTrees | 0.2100 | 0.6165 | 0.8952 | 0.7500 | 10 | 6 |
+| **GradientBoosting** | 0.2113 | 0.7633 | **0.9525** | **0.8833** | 10 | 6 |
+| RidgeClassifier | 0.2397 | 0.6588 | 0.7687 | 0.5833 | 10 | 6 |
+| LogisticRegression | 0.2673 | 0.7229 | 0.7389 | 0.5333 | 10 | 6 |
+
+**Best model by PR-AUC: GradientBoosting** (0.9525 PR-AUC, 0.8833 ROC-AUC)
+**Best model by Brier Score: RandomForest** (0.1887)
+
+Final evaluation on GradientBoosting:
+- Brier Score: **0.2113**
+- Log-Loss: **0.7633**
+- PR-AUC: **0.9525**
+
+### Risk Score Timeline — GradientBoosting
+
+| Year | P(breach) | Tier | Actual Breach |
+|------|-----------|------|---------------|
+| 2011 | 3.0% | LOW | No |
+| 2012 | 2.3% | LOW | No |
+| 2013 | 0.8% | LOW | No |
+| 2014 | 1.0% | LOW | No |
+| 2015 | 0.5% | LOW | **Yes** |
+| 2016 | 18.9% | LOW | No |
+| 2017 | 35.8% | LOW | **Yes** |
+| 2018 | 30.0% | LOW | **Yes** |
+| 2019 | 25.9% | LOW | No |
+| 2020 | 20.5% | LOW | **Yes** |
+| 2021 | 55.8% | ELEVATED | **Yes** |
+| 2022 | 69.4% | HIGH | **Yes** |
+| 2023 | 77.3% | HIGH | **Yes** |
+| 2024 | 59.4% | ELEVATED | **Yes** |
+| 2025 | 58.3% | ELEVATED | **Yes** |
+| 2026 | 72.8% | HIGH | **Yes** |
+
+### Risk Tiers
+
+| Tier | Probability | Recommended Posture |
+|------|-------------|---------------------|
+| CRITICAL | ≥ 80% | Incident response readiness |
+| HIGH | 60–79% | Active defence posture |
+| ELEVATED | 40–59% | Enhanced vigilance |
+| LOW | < 40% | Routine monitoring |
+
+---
+
+## Outputs
+
+After a full run, `outputs/` contains **16 PNG images** plus 2 data files:
+
+| File | Generated by | Description |
+|------|-------------|-------------|
+| `01_dataset_overview.png` | `evaluation.py` | Breach counts by year and source |
+| `02_sector_distribution.png` | `evaluation.py` | Sector breakdown across all years |
+| `03_method_distribution.png` | `evaluation.py` | Attack method breakdown |
+| `04_crypto_vs_all.png` | `evaluation.py` | Crypto vs non-crypto breaches over time |
+| `05_records_over_time.png` | `evaluation.py` | Records exposed per year (log scale) |
+| `06_model_comparison.png` | `evaluation.py` | Mean metrics bar chart across models |
+| `07_pr_curves.png` | `evaluation.py` | Precision-recall curves per model |
+| `08_probability_timeline.png` | `evaluation.py` | Predicted risk probability per year |
+| `09_feature_importance.png` | `evaluation.py` | Top features (RF + GradientBoosting) |
+| `10_calibration.png` | `evaluation.py` | Reliability diagrams per model |
+| `11_confusion_matrix_heatmap.png` | `evaluation.py` | Threshold-based confusion matrices |
+| `12_brier_logloss_by_fold.png` | `evaluation.py` | Per-fold metric evolution |
+| `executive_summary_dashboard.png` | Notebook cell 56 | Dark-theme executive summary (6 panels) |
+| `dashboard_threat_intelligence.png` | Notebook cell 57 | Sector/method/trend analysis (5 panels) |
+| `dashboard_model_comparison.png` | Notebook cell 58 | All-model comparison + ensemble band (5 panels) |
+| `dashboard_prediction_audit.png` | Notebook cell 59 | TP/TN/FP/FN audit + KPI tiles (5 panels) |
+| `ensemble_forecast.csv` | `main.py` | Year-by-year ensemble probabilities with CI |
+| `model_artefacts.pkl` | `main.py` | Fitted models, scaler, feature names, predictions |
+
+---
+
+## Notebook Structure
+
+The notebook (`Crypto_Breach_ML_Pipeline.ipynb`) mirrors the CLI pipeline with full visualisation:
+
+| Section | Cells | Content |
+|---------|-------|---------|
+| Setup | 1–3 | Imports, environment check |
+| 2: EDA | 8–16 | 9 plots: breach volume, sector/method distributions, crypto trends, cumulative exposure, bubble chart |
+| 3: Features | 18–20 | Feature matrix preview, scaled matrix |
+| 4: Feature Analysis | 23–27 | Correlation heatmap, label correlation, class-conditional distributions, violin plots, scatter matrix |
+| 5: Walk-Forward | 29–32 | Model training, fold visualisation, ensemble consensus |
+| 6: Model Evaluation | 34–42 | Summary table, PR/ROC curves, learning curves, calibration, Brier heatmap, probability timeline |
+| 7: Feature Importance | 44–49 | RF importance, Pareto, SHAP-style contributions, RF vs GBM comparison, drift, stability |
+| 8: Risk Scoring | 51–55 | Risk tiers, confusion matrix, threshold analysis, error spotlight, final printout |
+| Dashboards | 56–59 | Executive summary + 3 themed dashboards (all saved to `outputs/`) |
 
 ---
 
 ## Known Limitations
 
-- N=23 annual observations is a fundamental data constraint. All metrics carry wide
-  confidence intervals compared to what they would at N=1000+. A ROC-AUC of 0.90
-  at N=23 is encouraging but not statistically robust.
-- External features from CE and WA only cover 2014/2016 onward. Folds testing
-  2009-2015 rely entirely on breach-derived features, with NaN imputed for external
-  columns.
-- The 2026 data point is partial-year (CE database through March 2026 only).
-  Predictions for 2026 should be treated as preliminary.
-- The label definition (crypto_fraction above median) changes its semantic meaning
-  if the total breach volume changes drastically. A year with 50% crypto fraction but
-  only 10 total breaches would be labelled positive the same as a year with 12% of
-  10,000 breaches.
+- **N=23 annual observations** is a fundamental constraint. All metrics carry wide confidence intervals. A PR-AUC of 0.95 at N=23 is encouraging but not statistically robust in the same way as N=1,000+.
+- **External features (CE, WA) only cover 2014/2016 onward.** Folds testing 2009–2015 rely entirely on breach-derived features; NaN is imputed per-fold from the training median.
+- **2026 is a partial-year observation** (CE data through March 2026 only). Predictions for 2026 should be treated as preliminary.
+- **Feature importances unavailable for tree models via `mean_feature_importance()`** due to Platt calibration wrapping. A direct extraction fallback via `_extract_fi_from_model()` from `wfv.best_models` is used in the executive dashboard and notebook 7E/7F cells.
+- The `crypto_binary` label (fraction above median) changes semantic meaning if total breach volume shifts drastically. A year with 50% crypto fraction but only 10 total breaches receives the same label as a year with 12% of 10,000 breaches.
 
 ---
 
@@ -260,24 +299,24 @@ notebook
 pypdf
 ```
 
-Optional PDF fallback:
+Tested on: `numpy 2.4.3`, `pandas 3.0.1`, `scikit-learn 1.8.0`
+
+No XGBoost, TensorFlow, or GPU required. Python 3.9+. Fully Windows-compatible — logging uses ASCII output and writes to file in UTF-8.
+
+Optional (for CSIS PDF extraction):
 ```bash
 sudo apt-get install poppler-utils   # Linux
 brew install poppler                 # macOS
+# pip install cryptography>=3.1      # for AES-encrypted PDFs
 ```
-
-No xgboost, tensorflow, or GPU required. Python 3.9+. Fully Windows-compatible --
-all logging uses ASCII output and writes to file in UTF-8.
 
 ---
 
 ## References
 
-- Olushola A & Meenakshi SP (2025). Cybersecurity crimes in cryptocurrency exchanges
-  (2009-2024). Frontiers in Blockchain 8:1713637.
-- CSIS. Significant Cyber Incidents Since 2006. Center for Strategic and
-  International Studies.
-- Kaggle / Information is Beautiful. World's Biggest Data Breaches & Hacks.
-- HHS / OCR. Breach Portal: Notice to the Secretary of HHS.
-- Washington State Office of the Attorney General. Data Breach Notifications
-  Affecting Washington Residents.
+- Olushola A & Meenakshi SP (2025). Cybersecurity crimes in cryptocurrency exchanges (2009–2024). *Frontiers in Blockchain* 8:1713637.
+- CSIS. *Significant Cyber Incidents Since 2006.* Center for Strategic and International Studies.
+- Kaggle / Information is Beautiful. *World's Biggest Data Breaches & Hacks.*
+- HHS / OCR. *Breach Portal: Notice to the Secretary of HHS.*
+- Washington State Office of the Attorney General. *Data Breach Notifications Affecting Washington Residents.*
+- DeFi Hack Labs. *DeFi Protocol Exploit Database.*
