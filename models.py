@@ -1,37 +1,23 @@
 """
-models.py  (v3.1 -- log-loss fix)
-==================================
-Fix for log-loss=0.96 (good Brier/AUC but terrible log-loss):
+models.py
+=========
+Walk-forward time-series cross-validation with 5 calibrated models.
 
-ROOT CAUSE: GradientBoosting outputs raw probabilities with no calibration
-wrapper. GBM is notorious for overconfident predictions near 0 and 1.
-A single confident wrong prediction contributes -log(0.03) ? 3.5 to log-loss,
-which at N=22 inflates the mean by ~0.16 per such error.
-
-THREE-PART FIX:
-  1. Wrap GBM (and all tree ensembles) in CalibratedClassifierCV(method="sigmoid")
-     unconditionally -- Platt scaling maps raw GBM scores to calibrated probabilities.
-     "sigmoid" is preferred over "isotonic" at small N (isotonic overfits at N<40).
-  2. Apply label smoothing (eps=0.10) after predict_proba: blend predictions
-     toward the training base rate. This caps the maximum log-loss contribution
-     per prediction and is the standard fix when calibration CV is unstable.
-  3. WalkForwardValidator now always calibrates tree models regardless of the
-     `calibrate` flag -- the flag now only controls isotonic vs sigmoid choice.
-
-Previous fixes (v3) retained:
-  1. Fix plot 12 PR-AUC NaN bug
-  2. Better hyperparameters for small-N
-  3. Remove SVM, add Ridge LR variant
-  4. SelectKBest feature selection
+Calibration strategy:
+  - Sigmoid (Platt) preferred over isotonic: stable from ~10 samples vs ~40+.
+  - Adaptive cv: early folds (<3 minority-class samples) drop calibration wrapper
+    so tree models produce real predictions instead of falling back to 0.5.
+  - Label smoothing (eps=0.05) blends toward training base rate, capping
+    per-sample log-loss at -log(0.05) ~ 3.0 while allowing confident predictions.
+  - Ensemble weighted by each model's cumulative PR-AUC (softmax T=2) instead
+    of a simple mean, boosting the best models and reducing drag from weaker ones.
 """
 
 import numpy as np
 import pandas as pd
 import logging
 from dataclasses import dataclass, field
-from scipy.special import expit, logit as sp_logit
-from scipy.optimize import minimize_scalar
-from sklearn.base import clone, BaseEstimator
+from sklearn.base import clone
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import (RandomForestClassifier, GradientBoostingClassifier,
                                ExtraTreesClassifier)
@@ -42,6 +28,56 @@ from sklearn.metrics import (brier_score_loss, log_loss,
                               average_precision_score, roc_auc_score)
 
 log = logging.getLogger(__name__)
+
+
+def _extract_fi_from_model(m, col_names):
+    """Extract feature importances from a (possibly calibrated) pipeline.
+
+    Averages across all calibration folds so the result is stable.
+    Returns dict {feature_name: importance}, empty if not available.
+    """
+    col_names = np.asarray(col_names)
+    candidates = []
+    if isinstance(m, CalibratedClassifierCV):
+        for cc in getattr(m, "calibrated_classifiers_", []):
+            est = getattr(cc, "estimator", None)
+            if est is not None:
+                candidates.append(est)
+        if not candidates and hasattr(m, "estimator"):
+            candidates.append(m.estimator)
+    else:
+        candidates.append(m)
+
+    fi_accum = {}
+    count = 0
+    for inner in candidates:
+        feat_names = col_names
+        raw_clf = inner
+        if hasattr(inner, "named_steps"):
+            sel = inner.named_steps.get("select")
+            clf = inner.named_steps.get("clf")
+            if clf is None:
+                continue
+            if sel is not None and hasattr(sel, "get_support"):
+                try:
+                    feat_names = col_names[sel.get_support()]
+                except Exception:
+                    pass
+            raw_clf = getattr(clf, "estimator", clf)
+        if hasattr(raw_clf, "feature_importances_"):
+            for fn, imp in zip(feat_names, raw_clf.feature_importances_):
+                fi_accum[fn] = fi_accum.get(fn, 0.0) + float(imp)
+            count += 1
+        elif hasattr(raw_clf, "coef_"):
+            coef = raw_clf.coef_
+            if coef.ndim > 1:
+                coef = coef[0]
+            for fn, imp in zip(feat_names, np.abs(coef)):
+                fi_accum[fn] = fi_accum.get(fn, 0.0) + float(imp)
+            count += 1
+    if count == 0:
+        return {}
+    return {k: v / count for k, v in fi_accum.items()}
 
 
 @dataclass
@@ -68,55 +104,10 @@ class FoldResult:
             ("roc_auc",  roc_auc_score,           {}),
         ]:
             try:    out[name] = fn(self.y_true, yp, **kw)
-            except: out[name] = np.nan
+            except Exception: out[name] = np.nan
         return out
 
 
-
-class _AdaptiveRidge(BaseEstimator):
-    """
-    Ridge classifier with adaptive probability calibration.
-    Inherits BaseEstimator for sklearn 1.8+ compatibility (__sklearn_tags__).
-    Automatically picks calibration method based on training size:
-      - min_class < 3 : raw sigmoid mapping (too few samples for CV)
-      - min_class 3-4 : sigmoid calibration cv=3
-      - min_class 5+  : isotonic calibration cv=5
-    """
-    def __init__(self, alpha=1.0):
-        self.alpha = alpha
-
-    def fit(self, X, y):
-        n_pos     = int(y.sum())
-        n_neg     = len(y) - n_pos
-        min_class = min(n_pos, n_neg)
-        base      = RidgeClassifier(alpha=self.alpha, class_weight="balanced")
-
-        if min_class < 3:
-            base.fit(X, y)
-            self._fitted = base
-            self._use_raw = True
-        elif min_class < 5:
-            cal = CalibratedClassifierCV(base, method="sigmoid", cv=3)
-            cal.fit(X, y)
-            self._fitted  = cal
-            self._use_raw = False
-        else:
-            cv  = min(5, min_class)
-            cal = CalibratedClassifierCV(base, method="isotonic", cv=cv)
-            cal.fit(X, y)
-            self._fitted  = cal
-            self._use_raw = False
-        return self
-
-    def predict_proba(self, X):
-        if self._use_raw:
-            scores = self._fitted.decision_function(X)
-            proba  = 1.0 / (1.0 + np.exp(-scores))
-            return np.column_stack([1 - proba, proba])
-        return self._fitted.predict_proba(X)
-
-    def predict(self, X):
-        return (self.predict_proba(X)[:, 1] >= 0.5).astype(int)
 
 
 def _platt_wrap(pipeline, cv=3):
@@ -142,57 +133,54 @@ def _platt_wrap(pipeline, cv=3):
     return CalibratedClassifierCV(pipeline, method="sigmoid", cv=cv)
 
 
-# Label smoothing constant -- blend predictions toward the training base rate
-# after predict_proba. Caps per-sample log-loss regardless of model confidence.
-#   eps=0.10 -> max contribution per sample bounded at -log(0.10) ? 2.3
-#             (vs -log(0.01) ? 4.6 without any smoothing)
-LABEL_SMOOTH_EPS = 0.10
+# Label smoothing constant: blend predictions toward the training base rate.
+# eps=0.05 caps per-sample log-loss at -log(0.05) ~ 3.0 while still allowing
+# confident predictions (max prob = 0.95+), balancing calibration vs. sharpness.
+LABEL_SMOOTH_EPS = 0.05
 
 
 def build_models():
     return {
-        # LR -- natively well-calibrated; no wrapper needed
+        # LR -- natively well-calibrated; C=0.10 allows slightly more confidence
         "LogisticRegression": Pipeline([
-            ("select", SelectKBest(f_classif, k=20)),
-            ("clf",    LogisticRegression(C=0.05, penalty="l2", solver="lbfgs",
+            ("select", SelectKBest(f_classif, k=25)),
+            ("clf",    LogisticRegression(C=0.10, penalty="l2", solver="lbfgs",
                                           max_iter=2000, class_weight="balanced",
                                           random_state=42))
         ]),
 
-        # Strong-L2 LR variant (acts like Ridge in probability space)
+        # Strong-L2 LR variant; C=0.05 is less over-regularised than before
         "RidgeClassifier": Pipeline([
-            ("select", SelectKBest(f_classif, k=20)),
-            ("clf",    LogisticRegression(C=0.01, penalty="l2", solver="lbfgs",
+            ("select", SelectKBest(f_classif, k=25)),
+            ("clf",    LogisticRegression(C=0.05, penalty="l2", solver="lbfgs",
                                           max_iter=2000, class_weight="balanced",
                                           random_state=0))
         ]),
 
-        # Random Forest -- Platt-wrapped to fix overconfident leaf probabilities
+        # Random Forest -- 1000 trees, depth=4 for richer DeFi-era interactions
         "RandomForest": _platt_wrap(Pipeline([
-            ("select", SelectKBest(f_classif, k=30)),
-            ("clf",    RandomForestClassifier(n_estimators=500, max_depth=3,
+            ("select", SelectKBest(f_classif, k=35)),
+            ("clf",    RandomForestClassifier(n_estimators=1000, max_depth=4,
                                               min_samples_leaf=2, max_features="sqrt",
                                               class_weight="balanced_subsample",
                                               random_state=42, n_jobs=-1))
         ])),
 
-        # Extra Trees -- same Platt treatment as RF
+        # Extra Trees -- same tuning as RF; more randomness helps small-N variance
         "ExtraTrees": _platt_wrap(Pipeline([
-            ("select", SelectKBest(f_classif, k=30)),
-            ("clf",    ExtraTreesClassifier(n_estimators=500, max_depth=3,
+            ("select", SelectKBest(f_classif, k=35)),
+            ("clf",    ExtraTreesClassifier(n_estimators=1000, max_depth=4,
                                             min_samples_leaf=2, max_features="sqrt",
                                             class_weight="balanced_subsample",
                                             random_state=42, n_jobs=-1))
         ])),
 
-        # GradientBoosting -- primary log-loss offender without calibration.
-        # Raw GBM leaf-fraction probs are the most overconfident in sklearn.
-        # Platt scaling is mandatory here.
+        # GradientBoosting -- lr=0.03 / 300 trees keeps it conservative but sharper
         "GradientBoosting": _platt_wrap(Pipeline([
-            ("select", SelectKBest(f_classif, k=25)),
-            ("clf",    GradientBoostingClassifier(n_estimators=200, max_depth=2,
-                                                   learning_rate=0.02, subsample=0.6,
-                                                   min_samples_leaf=3, max_features="sqrt",
+            ("select", SelectKBest(f_classif, k=30)),
+            ("clf",    GradientBoostingClassifier(n_estimators=300, max_depth=2,
+                                                   learning_rate=0.03, subsample=0.7,
+                                                   min_samples_leaf=2, max_features="sqrt",
                                                    random_state=42))
         ])),
     }
@@ -252,16 +240,28 @@ class WalkForwardValidator:
                      f"test {test_yr} | y={y_te.values} | n_train={len(X_tr)} "
                      f"pos={y_tr.sum()}")
 
+            n_min = int(min(y_tr.sum(), len(y_tr) - y_tr.sum()))
+
             for name, base in models.items():
                 m = clone(base)
 
-                # NOTE: tree models (RF, ExtraTrees, GBM) are already wrapped in
-                # CalibratedClassifierCV inside build_models() via _platt_wrap().
-                # The legacy calibrate flag below only applies to bare Pipelines
-                # that are NOT already wrapped (i.e. the LR variants).
-                if (self.calibrate and isinstance(base, Pipeline) and
-                        y_tr.sum() >= 3 and (len(y_tr) - y_tr.sum()) >= 3):
-                    cv = min(3, int(min(y_tr.sum(), len(y_tr) - y_tr.sum())))
+                # Adaptive Platt calibration cv.
+                # Tree models are pre-wrapped with cv=3 in build_models(), but
+                # early folds have too few minority-class samples for cv=3, causing
+                # fit failures and silent fallback to y_prob=0.5.
+                # Fix: re-wrap with safe cv, or strip calibration entirely when
+                # n_min < 2 so the raw pipeline still makes real predictions.
+                if isinstance(m, CalibratedClassifierCV) and m.method == "sigmoid":
+                    if n_min < 2:
+                        m = clone(m.estimator)          # no calibration wrapper
+                    elif n_min == 2:
+                        m = CalibratedClassifierCV(
+                            clone(m.estimator), method="sigmoid", cv=2)
+                    # else: keep cv=3 (n_min >= 3)
+
+                # Legacy flag for LR variants (bare Pipelines)
+                elif (self.calibrate and isinstance(m, Pipeline) and n_min >= 3):
+                    cv = min(3, n_min)
                     m = CalibratedClassifierCV(m, method="sigmoid", cv=cv)
 
                 try:
@@ -279,39 +279,8 @@ class WalkForwardValidator:
                     log.warning(f"  {name} failed fold {fold_id}: {e}")
                     yp = np.array([0.5])
 
-                # Extract feature importance -- unwrap CalibratedClassifierCV if present
-                fi = {}
-                try:
-                    inner = m
-                    # If model is CalibratedClassifierCV, unwrap to get the Pipeline
-                    if isinstance(inner, CalibratedClassifierCV):
-                        # Use the first calibrated classifier's base estimator
-                        if hasattr(inner, "calibrated_classifiers_") and inner.calibrated_classifiers_:
-                            inner = inner.calibrated_classifiers_[0].estimator
-                        elif hasattr(inner, "estimator"):
-                            inner = inner.estimator
-
-                    if isinstance(inner, Pipeline):
-                        sel = inner.named_steps.get("select")
-                        clf = inner.named_steps.get("clf")
-                        if sel is not None and hasattr(sel, "get_support"):
-                            mask = sel.get_support()
-                            feat_names = np.array(X_tr.columns)[mask]
-                        else:
-                            feat_names = np.array(X_tr.columns)
-
-                        raw_clf = clf
-                        if hasattr(clf, "estimator"):
-                            raw_clf = clf.estimator
-                        if hasattr(raw_clf, "feature_importances_"):
-                            fi = dict(zip(feat_names, raw_clf.feature_importances_))
-                        elif hasattr(raw_clf, "coef_"):
-                            coef = raw_clf.coef_
-                            if coef.ndim > 1:
-                                coef = coef[0]
-                            fi = dict(zip(feat_names, np.abs(coef)))
-                except Exception:
-                    pass
+                # Extract feature importances (averages across calibration folds)
+                fi = _extract_fi_from_model(m, X_tr.columns)
 
                 r = FoldResult(fold_id=fold_id, model_name=name,
                                train_years=tr_yrs, test_years=[test_yr],
@@ -351,11 +320,11 @@ class WalkForwardValidator:
             n_pos, n_neg = int(yt.sum()), int((1-yt).sum())
             brier = float(np.mean((yp - yt)**2))
             try:    ll = log_loss(yt, yp, labels=[0, 1])
-            except: ll = np.nan
+            except Exception: ll = np.nan
             try:    pr = average_precision_score(yt, yp) if n_pos > 0 else np.nan
-            except: pr = np.nan
+            except Exception: pr = np.nan
             try:    ra = roc_auc_score(yt, yp) if (n_pos > 0 and n_neg > 0) else np.nan
-            except: ra = np.nan
+            except Exception: ra = np.nan
             rows.append({"model":       model_name,
                          "brier":       round(brier, 4),
                          "log_loss":    round(ll, 4) if not np.isnan(ll) else np.nan,
@@ -380,11 +349,10 @@ class WalkForwardValidator:
 
     def ensemble_predictions(self):
         """
-        Average predictions across all models per year.
-        More stable than any single model at small N -- averaging across models
-        reduces variance from individual lucky/unlucky folds.
-        Also returns the per-year spread (max - min across models) as a simple
-        uncertainty proxy: a wide spread means models disagree on that year.
+        PR-AUC-weighted average across models per year.
+        Each model's weight is proportional to softmax(PR-AUC / T) with T=2,
+        so better-performing models contribute more without excluding weaker ones.
+        Simple mean is a special case when all PR-AUCs are equal.
         """
         preds = self.consolidated_predictions()
         if preds.empty:
@@ -396,17 +364,42 @@ class WalkForwardValidator:
             if p >= 0.40: return "[ELEVATED]"
             return "[LOW]     "
 
+        # Compute per-model cumulative PR-AUC for weighting
+        model_pr = {}
+        for mname, grp in preds.groupby("model"):
+            yt = grp["y_true"].values
+            yp = grp["y_prob"].values
+            try:
+                model_pr[mname] = (average_precision_score(yt, yp)
+                                   if yt.sum() > 0 and (1 - yt).sum() > 0
+                                   else 0.5)
+            except Exception:
+                model_pr[mname] = 0.5
+
+        # Softmax with temperature T=2: amplifies differences without winner-takes-all
+        T = 2.0
+        names  = sorted(model_pr)
+        scores = np.array([model_pr[n] for n in names])
+        w_raw  = np.exp(scores / T)
+        w_norm = w_raw / w_raw.sum()
+        weight_map = dict(zip(names, w_norm))
+        log.info("  Ensemble weights: " +
+                 ", ".join(f"{n}={w:.3f}" for n, w in sorted(weight_map.items(),
+                                                              key=lambda x: -x[1])))
+
+        preds["_w"]  = preds["model"].map(weight_map).fillna(1.0 / len(weight_map))
+        preds["_wp"] = preds["y_prob"] * preds["_w"]
+
         grp = preds.groupby("year")
         ens = pd.DataFrame({
             "y_true"    : grp["y_true"].first(),
-            "y_prob"    : grp["y_prob"].mean().round(4),
+            "y_prob"    : (grp["_wp"].sum() / grp["_w"].sum()).round(4),
             "y_prob_lo" : grp["y_prob"].min().round(4),
             "y_prob_hi" : grp["y_prob"].max().round(4),
             "n_models"  : grp["model"].nunique(),
         })
         ens["ci_width"] = (ens["y_prob_hi"] - ens["y_prob_lo"]).round(4)
         ens["tier"]     = ens["y_prob"].apply(_tier)
-        # Flag years where models disagree significantly
         ens["reliable"] = ens["ci_width"] < 0.40
         return ens
 

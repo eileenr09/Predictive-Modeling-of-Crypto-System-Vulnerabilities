@@ -64,6 +64,7 @@ def run(data_dir: str = "data", target: str = "crypto_binary",
     NEW_FILES = [
         "cyber_events_2026-03-22.csv",
         "Data_Breach_Notifications_Affecting_Washington_Residents.csv",
+        "defi_hack_labs.csv",
     ]
 
     if not os.path.isdir(abs_data):

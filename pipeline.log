@@ -1082,3 +1082,450 @@ RandomForest        0.2485    0.6987  0.8313   0.6833          10           6   
 2026-03-22 15:08:32,540 [INFO]         Treat those years as directional signals only.
 2026-03-22 15:08:32,551 [INFO]   Artefacts saved (14 files) -> outputs/
 2026-03-22 15:08:32,552 [INFO] Pipeline complete.
+2026-04-22 19:40:29,154 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-04-22 19:40:29,155 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-04-22 19:40:29,155 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 19:40:29,156 [INFO] ============================================================
+2026-04-22 19:40:29,156 [INFO] STAGE 1 -- Data Ingestion
+2026-04-22 19:40:29,156 [INFO] ============================================================
+2026-04-22 19:40:31,052 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-04-22 19:40:32,509 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-04-22 19:40:32,630 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-04-22 19:40:32,800 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-04-22 19:40:32,918 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-04-22 19:40:33,394 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-04-22 19:40:35,541 [INFO]   CSIS PDF: extracted via pdftotext
+2026-04-22 19:40:35,697 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-04-22 19:40:40,725 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-04-22 19:40:40,880 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 19:40:40,916 [INFO]   Combined: 19,279 unique records (dropped 1,324 duplicates from 20,603 raw rows)
+2026-04-22 19:40:40,918 [INFO]   Total records : 19,279
+2026-04-22 19:40:40,918 [INFO]   Crypto-related: 965
+2026-04-22 19:40:40,919 [INFO]   Year range    : 2004 - 2026
+2026-04-22 19:40:40,925 [INFO]   Sources       : {'CE': 15949, 'WA': 1506, 'HHS': 883, 'IIB': 416, 'DBN': 273, 'CSIS': 207, 'DBEN': 37, 'DF1': 8}
+2026-04-22 19:40:40,925 [INFO] ============================================================
+2026-04-22 19:40:40,926 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-04-22 19:40:40,926 [INFO] ============================================================
+2026-04-22 19:40:44,574 [INFO]   Label: crypto_fraction median split (threshold=0.0367)
+2026-04-22 19:40:44,576 [INFO]   Label distribution: {0: 12, 1: 11}
+2026-04-22 19:40:44,608 [INFO]   Dropping 21 highly correlated features
+2026-04-22 19:40:44,611 [INFO]   Feature matrix: (23, 42) | Positive rate: 0.48 | Features: 42
+2026-04-22 19:40:44,664 [INFO]   External: AI workforce dataset loaded
+2026-04-22 19:40:44,881 [INFO]   External: Market trend dataset loaded
+2026-04-22 19:40:44,941 [INFO]   External: World Bank dataset loaded
+2026-04-22 19:40:46,446 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-04-22 19:40:46,505 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-04-22 19:40:46,759 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-04-22 19:40:46,792 [INFO]   Dropped 17 redundant external features
+2026-04-22 19:40:46,797 [INFO]   Combined feature matrix: (23, 67) (base: 42, external: 54, NaN: 16.4%)
+2026-04-22 19:40:46,797 [INFO]   Feature matrix : (23, 67)
+2026-04-22 19:40:46,798 [INFO]   Positive rate  : 47.8%  (11/23 years)
+2026-04-22 19:40:46,798 [INFO]   Feature count  : 67
+2026-04-22 19:40:46,801 [INFO]   NaN rate       : 16.4% (handled per-fold)
+2026-04-22 19:40:46,801 [INFO] ============================================================
+2026-04-22 19:40:46,801 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-04-22 19:40:46,801 [INFO] ============================================================
+2026-04-22 19:40:51,563 [INFO]   EDA plots saved.
+2026-04-22 19:40:51,563 [INFO]   EDA plots saved.
+2026-04-22 19:40:51,563 [INFO] ============================================================
+2026-04-22 19:40:51,563 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-04-22 19:40:51,564 [INFO] ============================================================
+2026-04-22 19:40:51,914 [INFO]   Fold 5: skipping (single class in train)
+2026-04-22 19:40:51,917 [INFO]   Fold 6: skipping (single class in train)
+2026-04-22 19:40:51,989 [INFO]   Fold 7: train 2004-2010 | test 2011 | y=[0] | n_train=7 pos=1
+2026-04-22 19:40:52,059 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,063 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,066 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,135 [INFO]   Fold 8: train 2004-2011 | test 2012 | y=[0] | n_train=8 pos=1
+2026-04-22 19:40:52,182 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,185 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,188 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,267 [INFO]   Fold 9: train 2004-2012 | test 2013 | y=[0] | n_train=9 pos=1
+2026-04-22 19:40:52,311 [WARNING]   RandomForest failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,314 [WARNING]   ExtraTrees failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,316 [WARNING]   GradientBoosting failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,374 [INFO]   Fold 10: train 2004-2013 | test 2014 | y=[0] | n_train=10 pos=1
+2026-04-22 19:40:52,418 [WARNING]   RandomForest failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,421 [WARNING]   ExtraTrees failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,423 [WARNING]   GradientBoosting failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,487 [INFO]   Fold 11: train 2004-2014 | test 2015 | y=[1] | n_train=11 pos=1
+2026-04-22 19:40:52,525 [WARNING]   RandomForest failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,529 [WARNING]   ExtraTrees failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,532 [WARNING]   GradientBoosting failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,596 [INFO]   Fold 12: train 2004-2015 | test 2016 | y=[1] | n_train=12 pos=2
+2026-04-22 19:40:52,642 [WARNING]   RandomForest failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,646 [WARNING]   ExtraTrees failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,649 [WARNING]   GradientBoosting failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 19:40:52,718 [INFO]   Fold 13: train 2004-2016 | test 2017 | y=[1] | n_train=13 pos=3
+2026-04-22 19:41:07,706 [INFO]   Fold 14: train 2004-2017 | test 2018 | y=[1] | n_train=14 pos=4
+2026-04-22 19:41:22,601 [INFO]   Fold 15: train 2004-2018 | test 2019 | y=[0] | n_train=15 pos=5
+2026-04-22 19:41:37,234 [INFO]   Fold 16: train 2004-2019 | test 2020 | y=[1] | n_train=16 pos=5
+2026-04-22 19:41:52,340 [INFO]   Fold 17: train 2004-2020 | test 2021 | y=[0] | n_train=17 pos=6
+2026-04-22 19:42:07,429 [INFO]   Fold 18: train 2004-2021 | test 2022 | y=[1] | n_train=18 pos=6
+2026-04-22 19:42:22,533 [INFO]   Fold 19: train 2004-2022 | test 2023 | y=[1] | n_train=19 pos=7
+2026-04-22 19:42:37,631 [INFO]   Fold 20: train 2004-2023 | test 2024 | y=[1] | n_train=20 pos=8
+2026-04-22 19:42:52,510 [INFO]   Fold 21: train 2004-2024 | test 2025 | y=[1] | n_train=21 pos=9
+2026-04-22 19:43:07,518 [INFO]   Fold 22: train 2004-2025 | test 2026 | y=[1] | n_train=22 pos=10
+2026-04-22 19:43:22,589 [INFO]   Complete: 80 fold-model results
+2026-04-22 19:43:22,589 [INFO] ============================================================
+2026-04-22 19:43:22,589 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-04-22 19:43:22,589 [INFO] ============================================================
+2026-04-22 19:43:22,643 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_pos_test  n_neg_test  n_folds
+model                                                                                 
+RidgeClassifier     0.1985    0.5830  0.8211   0.7167          10           6       16
+LogisticRegression  0.2000    0.5712  0.8211   0.7167          10           6       16
+ExtraTrees          0.2244    0.6413  0.8356   0.7000          10           6       16
+GradientBoosting    0.2440    0.6820  0.7515   0.5333          10           6       16
+RandomForest        0.2506    0.7057  0.8456   0.7000          10           6       16
+2026-04-22 19:43:29,110 [INFO]   Model evaluation plots saved.
+2026-04-22 19:43:29,110 [INFO]   Model evaluation plots saved.
+2026-04-22 19:43:29,111 [INFO] ============================================================
+2026-04-22 19:43:29,111 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-04-22 19:43:29,111 [INFO] ============================================================
+2026-04-22 19:43:29,128 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-04-22 19:43:29,129 [INFO]   ----------------------------------------------------------------------
+2026-04-22 19:43:29,131 [INFO]   2017      0.374     [0.18-0.50]   0.317  [LOW]            yes  BREACH
+2026-04-22 19:43:29,131 [INFO]   2018      0.492     [0.28-0.78]   0.499  [ELEVATED]    WIDE    BREACH
+2026-04-22 19:43:29,131 [INFO]   2019      0.510     [0.37-0.72]   0.342  [ELEVATED]       yes        
+2026-04-22 19:43:29,132 [INFO]   2020      0.631     [0.37-0.84]   0.469  [HIGH]        WIDE    BREACH
+2026-04-22 19:43:29,132 [INFO]   2021      0.564     [0.52-0.61]   0.088  [ELEVATED]       yes        
+2026-04-22 19:43:29,132 [INFO]   2022      0.602     [0.53-0.65]   0.118  [HIGH]           yes  BREACH
+2026-04-22 19:43:29,133 [INFO]   2023      0.628     [0.59-0.69]   0.097  [HIGH]           yes  BREACH
+2026-04-22 19:43:29,133 [INFO]   2024      0.711     [0.66-0.83]   0.177  [HIGH]           yes  BREACH
+2026-04-22 19:43:29,133 [INFO]   2025      0.555     [0.49-0.63]   0.135  [ELEVATED]       yes  BREACH
+2026-04-22 19:43:29,134 [INFO]   2026      0.602     [0.55-0.66]   0.117  [HIGH]           yes  BREACH
+2026-04-22 19:43:29,134 [INFO] 
+2026-04-22 19:43:29,134 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-04-22 19:43:29,134 [INFO]         Treat those years as directional signals only.
+2026-04-22 19:43:29,152 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-04-22 19:43:29,153 [INFO] Pipeline complete.
+2026-04-22 21:03:49,296 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-04-22 21:03:49,297 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-04-22 21:03:49,298 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 21:03:49,298 [INFO]   New dataset [OK]: defi_hack_labs.csv
+2026-04-22 21:03:49,298 [INFO] ============================================================
+2026-04-22 21:03:49,298 [INFO] STAGE 1 -- Data Ingestion
+2026-04-22 21:03:49,298 [INFO] ============================================================
+2026-04-22 21:03:50,955 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-04-22 21:03:51,442 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-04-22 21:03:51,476 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-04-22 21:03:51,520 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-04-22 21:03:51,550 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-04-22 21:03:51,894 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-04-22 21:03:52,497 [INFO]   CSIS PDF: extracted via pdftotext
+2026-04-22 21:03:52,570 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-04-22 21:03:54,541 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-04-22 21:03:54,593 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 21:03:54,624 [INFO]   DHL: 690 rows loaded from data\defi_hack_labs.csv
+2026-04-22 21:03:54,647 [INFO]   Combined: 19,964 unique records (dropped 1,329 duplicates from 21,293 raw rows)
+2026-04-22 21:03:54,648 [INFO]   Total records : 19,964
+2026-04-22 21:03:54,649 [INFO]   Crypto-related: 1,650
+2026-04-22 21:03:54,649 [INFO]   Year range    : 2004 - 2026
+2026-04-22 21:03:54,652 [INFO]   Sources       : {'CE': 15949, 'WA': 1506, 'HHS': 883, 'DHL': 685, 'IIB': 416, 'DBN': 273, 'CSIS': 207, 'DBEN': 37, 'DF1': 8}
+2026-04-22 21:03:54,652 [INFO] ============================================================
+2026-04-22 21:03:54,652 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-04-22 21:03:54,652 [INFO] ============================================================
+2026-04-22 21:03:58,176 [INFO]   Label: crypto_fraction median split (threshold=0.0439)
+2026-04-22 21:03:58,177 [INFO]   Label distribution: {0: 12, 1: 11}
+2026-04-22 21:03:58,190 [INFO]   Dropping 26 highly correlated features
+2026-04-22 21:03:58,192 [INFO]   Feature matrix: (23, 37) | Positive rate: 0.48 | Features: 37
+2026-04-22 21:03:58,207 [INFO]   External: AI workforce dataset loaded
+2026-04-22 21:03:58,288 [INFO]   External: Market trend dataset loaded
+2026-04-22 21:03:58,306 [INFO]   External: World Bank dataset loaded
+2026-04-22 21:03:58,892 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-04-22 21:03:58,915 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-04-22 21:03:59,010 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-04-22 21:03:59,021 [INFO]   Dropped 17 redundant external features
+2026-04-22 21:03:59,023 [INFO]   Combined feature matrix: (23, 62) (base: 37, external: 54, NaN: 18.1%)
+2026-04-22 21:03:59,023 [INFO]   Feature matrix : (23, 62)
+2026-04-22 21:03:59,023 [INFO]   Positive rate  : 47.8%  (11/23 years)
+2026-04-22 21:03:59,023 [INFO]   Feature count  : 62
+2026-04-22 21:03:59,024 [INFO]   NaN rate       : 18.1% (handled per-fold)
+2026-04-22 21:03:59,024 [INFO] ============================================================
+2026-04-22 21:03:59,024 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-04-22 21:03:59,024 [INFO] ============================================================
+2026-04-22 21:04:01,347 [INFO]   EDA plots saved.
+2026-04-22 21:04:01,347 [INFO]   EDA plots saved.
+2026-04-22 21:04:01,347 [INFO] ============================================================
+2026-04-22 21:04:01,347 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-04-22 21:04:01,347 [INFO] ============================================================
+2026-04-22 21:04:01,597 [INFO]   Fold 5: skipping (single class in train)
+2026-04-22 21:04:01,598 [INFO]   Fold 6: skipping (single class in train)
+2026-04-22 21:04:01,622 [INFO]   Fold 7: train 2004-2010 | test 2011 | y=[0] | n_train=7 pos=1
+2026-04-22 21:04:01,660 [WARNING]   RandomForest failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,661 [WARNING]   ExtraTrees failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,662 [WARNING]   GradientBoosting failed fold 7: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,694 [INFO]   Fold 8: train 2004-2011 | test 2012 | y=[0] | n_train=8 pos=1
+2026-04-22 21:04:01,743 [WARNING]   RandomForest failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,744 [WARNING]   ExtraTrees failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,745 [WARNING]   GradientBoosting failed fold 8: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,775 [INFO]   Fold 9: train 2004-2012 | test 2013 | y=[0] | n_train=9 pos=1
+2026-04-22 21:04:01,795 [WARNING]   RandomForest failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,796 [WARNING]   ExtraTrees failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,797 [WARNING]   GradientBoosting failed fold 9: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,824 [INFO]   Fold 10: train 2004-2013 | test 2014 | y=[0] | n_train=10 pos=1
+2026-04-22 21:04:01,844 [WARNING]   RandomForest failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,845 [WARNING]   ExtraTrees failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,846 [WARNING]   GradientBoosting failed fold 10: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,870 [INFO]   Fold 11: train 2004-2014 | test 2015 | y=[1] | n_train=11 pos=1
+2026-04-22 21:04:01,890 [WARNING]   RandomForest failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,891 [WARNING]   ExtraTrees failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,893 [WARNING]   GradientBoosting failed fold 11: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,916 [INFO]   Fold 12: train 2004-2015 | test 2016 | y=[0] | n_train=12 pos=2
+2026-04-22 21:04:01,935 [WARNING]   RandomForest failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,937 [WARNING]   ExtraTrees failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,939 [WARNING]   GradientBoosting failed fold 12: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,964 [INFO]   Fold 13: train 2004-2016 | test 2017 | y=[1] | n_train=13 pos=2
+2026-04-22 21:04:01,986 [WARNING]   RandomForest failed fold 13: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,988 [WARNING]   ExtraTrees failed fold 13: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:01,990 [WARNING]   GradientBoosting failed fold 13: Requesting 3-fold cross-validation but provided less than 3 examples for at least one class.
+2026-04-22 21:04:02,015 [INFO]   Fold 14: train 2004-2017 | test 2018 | y=[1] | n_train=14 pos=3
+2026-04-22 21:04:08,470 [INFO]   Fold 15: train 2004-2018 | test 2019 | y=[0] | n_train=15 pos=4
+2026-04-22 21:04:14,887 [INFO]   Fold 16: train 2004-2019 | test 2020 | y=[1] | n_train=16 pos=4
+2026-04-22 21:04:20,941 [INFO]   Fold 17: train 2004-2020 | test 2021 | y=[1] | n_train=17 pos=5
+2026-04-22 21:04:27,035 [INFO]   Fold 18: train 2004-2021 | test 2022 | y=[1] | n_train=18 pos=6
+2026-04-22 21:04:33,450 [INFO]   Fold 19: train 2004-2022 | test 2023 | y=[1] | n_train=19 pos=7
+2026-04-22 21:04:39,674 [INFO]   Fold 20: train 2004-2023 | test 2024 | y=[1] | n_train=20 pos=8
+2026-04-22 21:04:45,705 [INFO]   Fold 21: train 2004-2024 | test 2025 | y=[1] | n_train=21 pos=9
+2026-04-22 21:04:52,007 [INFO]   Fold 22: train 2004-2025 | test 2026 | y=[1] | n_train=22 pos=10
+2026-04-22 21:04:57,555 [INFO]   Complete: 80 fold-model results
+2026-04-22 21:04:57,555 [INFO] ============================================================
+2026-04-22 21:04:57,555 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-04-22 21:04:57,555 [INFO] ============================================================
+2026-04-22 21:04:59,157 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_pos_test  n_neg_test  n_folds
+model                                                                                 
+RandomForest        0.2070    0.6077  0.8911   0.8167          10           6       16
+ExtraTrees          0.2077    0.6103  0.8911   0.8167          10           6       16
+GradientBoosting    0.2115    0.6125  0.8540   0.7500          10           6       16
+RidgeClassifier     0.2207    0.6373  0.7956   0.6667          10           6       16
+LogisticRegression  0.2411    0.7234  0.7628   0.6167          10           6       16
+2026-04-22 21:05:01,995 [INFO]   Model evaluation plots saved.
+2026-04-22 21:05:01,995 [INFO]   Model evaluation plots saved.
+2026-04-22 21:05:01,995 [INFO] ============================================================
+2026-04-22 21:05:01,995 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-04-22 21:05:01,995 [INFO] ============================================================
+2026-04-22 21:05:02,001 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-04-22 21:05:02,001 [INFO]   ----------------------------------------------------------------------
+2026-04-22 21:05:02,002 [INFO]   2017      0.344     [0.04-0.50]   0.458  [LOW]         WIDE    BREACH
+2026-04-22 21:05:02,002 [INFO]   2018      0.437     [0.22-0.74]   0.523  [ELEVATED]    WIDE    BREACH
+2026-04-22 21:05:02,002 [INFO]   2019      0.477     [0.27-0.69]   0.415  [ELEVATED]    WIDE          
+2026-04-22 21:05:02,002 [INFO]   2020      0.553     [0.42-0.63]   0.206  [ELEVATED]       yes  BREACH
+2026-04-22 21:05:02,002 [INFO]   2021      0.674     [0.50-0.87]   0.374  [HIGH]           yes  BREACH
+2026-04-22 21:05:02,002 [INFO]   2022      0.656     [0.61-0.70]   0.087  [HIGH]           yes  BREACH
+2026-04-22 21:05:02,002 [INFO]   2023      0.748     [0.69-0.89]   0.201  [HIGH]           yes  BREACH
+2026-04-22 21:05:02,003 [INFO]   2024      0.639     [0.61-0.69]   0.084  [HIGH]           yes  BREACH
+2026-04-22 21:05:02,003 [INFO]   2025      0.636     [0.56-0.70]   0.138  [HIGH]           yes  BREACH
+2026-04-22 21:05:02,003 [INFO]   2026      0.651     [0.56-0.69]   0.132  [HIGH]           yes  BREACH
+2026-04-22 21:05:02,003 [INFO] 
+2026-04-22 21:05:02,003 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-04-22 21:05:02,003 [INFO]         Treat those years as directional signals only.
+2026-04-22 21:05:02,018 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-04-22 21:05:02,018 [INFO] Pipeline complete.
+2026-04-22 21:22:22,124 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-04-22 21:22:22,125 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-04-22 21:22:22,127 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 21:22:22,127 [INFO]   New dataset [OK]: defi_hack_labs.csv
+2026-04-22 21:22:22,127 [INFO] ============================================================
+2026-04-22 21:22:22,127 [INFO] STAGE 1 -- Data Ingestion
+2026-04-22 21:22:22,127 [INFO] ============================================================
+2026-04-22 21:22:24,290 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-04-22 21:22:24,836 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-04-22 21:22:24,873 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-04-22 21:22:24,918 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-04-22 21:22:24,948 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-04-22 21:22:25,257 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-04-22 21:22:25,842 [INFO]   CSIS PDF: extracted via pdftotext
+2026-04-22 21:22:25,909 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-04-22 21:22:27,854 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-04-22 21:22:27,908 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 21:22:27,918 [INFO]   DHL: 690 rows loaded from data\defi_hack_labs.csv
+2026-04-22 21:22:27,937 [INFO]   Combined: 19,964 unique records (dropped 1,329 duplicates from 21,293 raw rows)
+2026-04-22 21:22:27,938 [INFO]   Total records : 19,964
+2026-04-22 21:22:27,939 [INFO]   Crypto-related: 1,650
+2026-04-22 21:22:27,939 [INFO]   Year range    : 2004 - 2026
+2026-04-22 21:22:27,943 [INFO]   Sources       : {'CE': 15949, 'WA': 1506, 'HHS': 883, 'DHL': 685, 'IIB': 416, 'DBN': 273, 'CSIS': 207, 'DBEN': 37, 'DF1': 8}
+2026-04-22 21:22:27,943 [INFO] ============================================================
+2026-04-22 21:22:27,943 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-04-22 21:22:27,943 [INFO] ============================================================
+2026-04-22 21:22:31,170 [INFO]   Label: crypto_fraction median split (threshold=0.0439)
+2026-04-22 21:22:31,170 [INFO]   Label distribution: {0: 12, 1: 11}
+2026-04-22 21:22:31,183 [INFO]   Dropping 26 highly correlated features
+2026-04-22 21:22:31,184 [INFO]   Feature matrix: (23, 37) | Positive rate: 0.48 | Features: 37
+2026-04-22 21:22:31,198 [INFO]   External: AI workforce dataset loaded
+2026-04-22 21:22:31,283 [INFO]   External: Market trend dataset loaded
+2026-04-22 21:22:31,301 [INFO]   External: World Bank dataset loaded
+2026-04-22 21:22:31,888 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-04-22 21:22:31,912 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-04-22 21:22:32,020 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-04-22 21:22:32,032 [INFO]   Dropped 17 redundant external features
+2026-04-22 21:22:32,033 [INFO]   Combined feature matrix: (23, 62) (base: 37, external: 54, NaN: 18.1%)
+2026-04-22 21:22:32,034 [INFO]   Feature matrix : (23, 62)
+2026-04-22 21:22:32,034 [INFO]   Positive rate  : 47.8%  (11/23 years)
+2026-04-22 21:22:32,034 [INFO]   Feature count  : 62
+2026-04-22 21:22:32,035 [INFO]   NaN rate       : 18.1% (handled per-fold)
+2026-04-22 21:22:32,035 [INFO] ============================================================
+2026-04-22 21:22:32,035 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-04-22 21:22:32,035 [INFO] ============================================================
+2026-04-22 21:22:34,386 [INFO]   EDA plots saved.
+2026-04-22 21:22:34,386 [INFO]   EDA plots saved.
+2026-04-22 21:22:34,386 [INFO] ============================================================
+2026-04-22 21:22:34,386 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-04-22 21:22:34,386 [INFO] ============================================================
+2026-04-22 21:22:34,667 [INFO]   Fold 5: skipping (single class in train)
+2026-04-22 21:22:34,669 [INFO]   Fold 6: skipping (single class in train)
+2026-04-22 21:22:34,695 [INFO]   Fold 7: train 2004-2010 | test 2011 | y=[0] | n_train=7 pos=1
+2026-04-22 21:22:38,076 [INFO]   Fold 8: train 2004-2011 | test 2012 | y=[0] | n_train=8 pos=1
+2026-04-22 21:22:41,330 [INFO]   Fold 9: train 2004-2012 | test 2013 | y=[0] | n_train=9 pos=1
+2026-04-22 21:22:44,541 [INFO]   Fold 10: train 2004-2013 | test 2014 | y=[0] | n_train=10 pos=1
+2026-04-22 21:22:47,759 [INFO]   Fold 11: train 2004-2014 | test 2015 | y=[1] | n_train=11 pos=1
+2026-04-22 21:22:50,893 [INFO]   Fold 12: train 2004-2015 | test 2016 | y=[0] | n_train=12 pos=2
+2026-04-22 21:22:58,181 [INFO]   Fold 13: train 2004-2016 | test 2017 | y=[1] | n_train=13 pos=2
+2026-04-22 21:23:05,346 [INFO]   Fold 14: train 2004-2017 | test 2018 | y=[1] | n_train=14 pos=3
+2026-04-22 21:23:16,114 [INFO]   Fold 15: train 2004-2018 | test 2019 | y=[0] | n_train=15 pos=4
+2026-04-22 21:23:26,810 [INFO]   Fold 16: train 2004-2019 | test 2020 | y=[1] | n_train=16 pos=4
+2026-04-22 21:23:37,989 [INFO]   Fold 17: train 2004-2020 | test 2021 | y=[1] | n_train=17 pos=5
+2026-04-22 21:23:48,679 [INFO]   Fold 18: train 2004-2021 | test 2022 | y=[1] | n_train=18 pos=6
+2026-04-22 21:23:59,396 [INFO]   Fold 19: train 2004-2022 | test 2023 | y=[1] | n_train=19 pos=7
+2026-04-22 21:24:10,325 [INFO]   Fold 20: train 2004-2023 | test 2024 | y=[1] | n_train=20 pos=8
+2026-04-22 21:24:21,058 [INFO]   Fold 21: train 2004-2024 | test 2025 | y=[1] | n_train=21 pos=9
+2026-04-22 21:24:31,868 [INFO]   Fold 22: train 2004-2025 | test 2026 | y=[1] | n_train=22 pos=10
+2026-04-22 21:24:42,501 [INFO]   Complete: 80 fold-model results
+2026-04-22 21:24:42,502 [INFO] ============================================================
+2026-04-22 21:24:42,502 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-04-22 21:24:42,502 [INFO] ============================================================
+2026-04-22 21:24:42,529 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_pos_test  n_neg_test  n_folds
+model                                                                                 
+RandomForest        0.1797    0.5458  0.9207   0.8333          10           6       16
+ExtraTrees          0.1975    0.5858  0.8984   0.7667          10           6       16
+GradientBoosting    0.1993    0.7278  0.9456   0.8833          10           6       16
+RidgeClassifier     0.2416    0.7237  0.8206   0.6833          10           6       16
+LogisticRegression  0.2695    0.8346  0.8026   0.6500          10           6       16
+2026-04-22 21:24:45,184 [INFO]   Model evaluation plots saved.
+2026-04-22 21:24:45,184 [INFO]   Model evaluation plots saved.
+2026-04-22 21:24:45,184 [INFO] ============================================================
+2026-04-22 21:24:45,184 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-04-22 21:24:45,184 [INFO] ============================================================
+2026-04-22 21:24:45,190 [INFO]   Ensemble weights: GradientBoosting=0.207, RandomForest=0.204, ExtraTrees=0.202, RidgeClassifier=0.194, LogisticRegression=0.193
+2026-04-22 21:24:45,197 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-04-22 21:24:45,197 [INFO]   ----------------------------------------------------------------------
+2026-04-22 21:24:45,198 [INFO]   2017      0.209     [0.02-0.34]   0.320  [LOW]            yes  BREACH
+2026-04-22 21:24:45,198 [INFO]   2018      0.435     [0.22-0.79]   0.571  [ELEVATED]    WIDE    BREACH
+2026-04-22 21:24:45,198 [INFO]   2019      0.468     [0.35-0.56]   0.207  [ELEVATED]       yes        
+2026-04-22 21:24:45,198 [INFO]   2020      0.442     [0.17-0.63]   0.451  [ELEVATED]    WIDE    BREACH
+2026-04-22 21:24:45,198 [INFO]   2021      0.742     [0.59-0.92]   0.328  [HIGH]           yes  BREACH
+2026-04-22 21:24:45,198 [INFO]   2022      0.757     [0.66-0.87]   0.208  [HIGH]           yes  BREACH
+2026-04-22 21:24:45,199 [INFO]   2023      0.818     [0.74-0.95]   0.213  [CRITICAL]       yes  BREACH
+2026-04-22 21:24:45,199 [INFO]   2024      0.664     [0.63-0.70]   0.074  [HIGH]           yes  BREACH
+2026-04-22 21:24:45,199 [INFO]   2025      0.673     [0.61-0.72]   0.113  [HIGH]           yes  BREACH
+2026-04-22 21:24:45,199 [INFO]   2026      0.680     [0.65-0.71]   0.059  [HIGH]           yes  BREACH
+2026-04-22 21:24:45,199 [INFO] 
+2026-04-22 21:24:45,199 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-04-22 21:24:45,199 [INFO]         Treat those years as directional signals only.
+2026-04-22 21:24:45,211 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-04-22 21:24:45,211 [INFO] Pipeline complete.
+2026-04-22 21:28:53,501 [INFO]   All core data files found in: C:\Users\usr1\Downloads\crypto_ml_project_FINAL (2)\crypto_ml_project\data
+2026-04-22 21:28:53,502 [INFO]   New dataset [OK]: cyber_events_2026-03-22.csv
+2026-04-22 21:28:53,502 [INFO]   New dataset [OK]: Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 21:28:53,502 [INFO]   New dataset [OK]: defi_hack_labs.csv
+2026-04-22 21:28:53,502 [INFO] ============================================================
+2026-04-22 21:28:53,503 [INFO] STAGE 1 -- Data Ingestion
+2026-04-22 21:28:53,503 [INFO] ============================================================
+2026-04-22 21:28:54,975 [INFO]   IIB: 417 rows loaded from data\Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
+2026-04-22 21:28:55,462 [INFO]   HHS: 908 rows loaded from data\Cyber_Security_Breaches.csv
+2026-04-22 21:28:55,496 [INFO]   DBN: 389 rows loaded from data\Data_BreachesN_new.csv
+2026-04-22 21:28:55,537 [INFO]   DBEN: 270 rows loaded from data\Data_Breaches_EN_V2_2004_2017_20180220.csv
+2026-04-22 21:28:55,569 [INFO]   DF1: 349 rows loaded from data\df_1.csv
+2026-04-22 21:28:55,836 [WARNING]   pypdf extraction error: cryptography>=3.1 is required for AES algorithm
+2026-04-22 21:28:57,445 [INFO]   CSIS PDF: extracted via pdftotext
+2026-04-22 21:28:57,512 [INFO]   CSIS: 207 incidents parsed from PDF
+2026-04-22 21:28:59,444 [INFO]   CE: 16532 rows loaded from data\cyber_events_2026-03-22.csv
+2026-04-22 21:28:59,493 [INFO]   WA: 1533 rows loaded from data\Data_Breach_Notifications_Affecting_Washington_Residents.csv
+2026-04-22 21:28:59,503 [INFO]   DHL: 690 rows loaded from data\defi_hack_labs.csv
+2026-04-22 21:28:59,521 [INFO]   Combined: 19,964 unique records (dropped 1,329 duplicates from 21,293 raw rows)
+2026-04-22 21:28:59,523 [INFO]   Total records : 19,964
+2026-04-22 21:28:59,523 [INFO]   Crypto-related: 1,650
+2026-04-22 21:28:59,523 [INFO]   Year range    : 2004 - 2026
+2026-04-22 21:28:59,527 [INFO]   Sources       : {'CE': 15949, 'WA': 1506, 'HHS': 883, 'DHL': 685, 'IIB': 416, 'DBN': 273, 'CSIS': 207, 'DBEN': 37, 'DF1': 8}
+2026-04-22 21:28:59,527 [INFO] ============================================================
+2026-04-22 21:28:59,527 [INFO] STAGE 2 -- Feature Engineering (leakage-fixed)
+2026-04-22 21:28:59,527 [INFO] ============================================================
+2026-04-22 21:29:02,447 [INFO]   Label: crypto_fraction median split (threshold=0.0439)
+2026-04-22 21:29:02,448 [INFO]   Label distribution: {0: 12, 1: 11}
+2026-04-22 21:29:02,461 [INFO]   Dropping 26 highly correlated features
+2026-04-22 21:29:02,462 [INFO]   Feature matrix: (23, 37) | Positive rate: 0.48 | Features: 37
+2026-04-22 21:29:02,474 [INFO]   External: AI workforce dataset loaded
+2026-04-22 21:29:02,554 [INFO]   External: Market trend dataset loaded
+2026-04-22 21:29:02,577 [INFO]   External: World Bank dataset loaded
+2026-04-22 21:29:03,158 [INFO]   External: cyber_events_2026-03-22.csv loaded
+2026-04-22 21:29:03,181 [INFO]   External: Data_Breach_Notifications_Affecting_Washington_Residents.csv loaded
+2026-04-22 21:29:03,273 [INFO]   External features: 54 cols x 23 years (NaN rate: 40.7%)
+2026-04-22 21:29:03,285 [INFO]   Dropped 17 redundant external features
+2026-04-22 21:29:03,287 [INFO]   Combined feature matrix: (23, 62) (base: 37, external: 54, NaN: 18.1%)
+2026-04-22 21:29:03,287 [INFO]   Feature matrix : (23, 62)
+2026-04-22 21:29:03,287 [INFO]   Positive rate  : 47.8%  (11/23 years)
+2026-04-22 21:29:03,287 [INFO]   Feature count  : 62
+2026-04-22 21:29:03,288 [INFO]   NaN rate       : 18.1% (handled per-fold)
+2026-04-22 21:29:03,288 [INFO] ============================================================
+2026-04-22 21:29:03,288 [INFO] STAGE 3 -- Exploratory Data Analysis
+2026-04-22 21:29:03,288 [INFO] ============================================================
+2026-04-22 21:29:05,473 [INFO]   EDA plots saved.
+2026-04-22 21:29:05,473 [INFO]   EDA plots saved.
+2026-04-22 21:29:05,473 [INFO] ============================================================
+2026-04-22 21:29:05,473 [INFO] STAGE 4 -- Walk-Forward Training (fold-local imputation + calibration)
+2026-04-22 21:29:05,473 [INFO] ============================================================
+2026-04-22 21:29:05,694 [INFO]   Fold 5: skipping (single class in train)
+2026-04-22 21:29:05,695 [INFO]   Fold 6: skipping (single class in train)
+2026-04-22 21:29:05,720 [INFO]   Fold 7: train 2004-2010 | test 2011 | y=[0] | n_train=7 pos=1
+2026-04-22 21:29:09,002 [INFO]   Fold 8: train 2004-2011 | test 2012 | y=[0] | n_train=8 pos=1
+2026-04-22 21:29:12,350 [INFO]   Fold 9: train 2004-2012 | test 2013 | y=[0] | n_train=9 pos=1
+2026-04-22 21:29:15,490 [INFO]   Fold 10: train 2004-2013 | test 2014 | y=[0] | n_train=10 pos=1
+2026-04-22 21:29:18,682 [INFO]   Fold 11: train 2004-2014 | test 2015 | y=[1] | n_train=11 pos=1
+2026-04-22 21:29:21,908 [INFO]   Fold 12: train 2004-2015 | test 2016 | y=[0] | n_train=12 pos=2
+2026-04-22 21:29:28,751 [INFO]   Fold 13: train 2004-2016 | test 2017 | y=[1] | n_train=13 pos=2
+2026-04-22 21:29:35,760 [INFO]   Fold 14: train 2004-2017 | test 2018 | y=[1] | n_train=14 pos=3
+2026-04-22 21:29:46,118 [INFO]   Fold 15: train 2004-2018 | test 2019 | y=[0] | n_train=15 pos=4
+2026-04-22 21:29:56,610 [INFO]   Fold 16: train 2004-2019 | test 2020 | y=[1] | n_train=16 pos=4
+2026-04-22 21:30:06,846 [INFO]   Fold 17: train 2004-2020 | test 2021 | y=[1] | n_train=17 pos=5
+2026-04-22 21:30:17,290 [INFO]   Fold 18: train 2004-2021 | test 2022 | y=[1] | n_train=18 pos=6
+2026-04-22 21:30:27,596 [INFO]   Fold 19: train 2004-2022 | test 2023 | y=[1] | n_train=19 pos=7
+2026-04-22 21:30:37,987 [INFO]   Fold 20: train 2004-2023 | test 2024 | y=[1] | n_train=20 pos=8
+2026-04-22 21:30:48,436 [INFO]   Fold 21: train 2004-2024 | test 2025 | y=[1] | n_train=21 pos=9
+2026-04-22 21:30:58,940 [INFO]   Fold 22: train 2004-2025 | test 2026 | y=[1] | n_train=22 pos=10
+2026-04-22 21:31:09,259 [INFO]   Complete: 80 fold-model results
+2026-04-22 21:31:09,260 [INFO] ============================================================
+2026-04-22 21:31:09,260 [INFO] STAGE 5 -- Evaluation (Brier + Log-Loss + PR-AUC)
+2026-04-22 21:31:09,260 [INFO] ============================================================
+2026-04-22 21:31:09,285 [INFO] 
+                     brier  log_loss  pr_auc  roc_auc  n_pos_test  n_neg_test  n_folds
+model                                                                                 
+RandomForest        0.1797    0.5458  0.9207   0.8333          10           6       16
+ExtraTrees          0.1975    0.5858  0.8984   0.7667          10           6       16
+GradientBoosting    0.1993    0.7278  0.9456   0.8833          10           6       16
+RidgeClassifier     0.2416    0.7237  0.8206   0.6833          10           6       16
+LogisticRegression  0.2695    0.8346  0.8026   0.6500          10           6       16
+2026-04-22 21:31:11,787 [INFO]   Model evaluation plots saved.
+2026-04-22 21:31:11,787 [INFO]   Model evaluation plots saved.
+2026-04-22 21:31:11,787 [INFO] ============================================================
+2026-04-22 21:31:11,787 [INFO] STAGE 6 -- Ensemble Forecast with Uncertainty Bands
+2026-04-22 21:31:11,787 [INFO] ============================================================
+2026-04-22 21:31:11,794 [INFO]   Ensemble weights: GradientBoosting=0.207, RandomForest=0.204, ExtraTrees=0.202, RidgeClassifier=0.194, LogisticRegression=0.193
+2026-04-22 21:31:11,799 [INFO]   Year  p(breach)     Model range  Spread        Tier  Reliable    Actual
+2026-04-22 21:31:11,799 [INFO]   ----------------------------------------------------------------------
+2026-04-22 21:31:11,800 [INFO]   2017      0.209     [0.02-0.34]   0.320  [LOW]            yes  BREACH
+2026-04-22 21:31:11,800 [INFO]   2018      0.435     [0.22-0.79]   0.571  [ELEVATED]    WIDE    BREACH
+2026-04-22 21:31:11,800 [INFO]   2019      0.468     [0.35-0.56]   0.207  [ELEVATED]       yes        
+2026-04-22 21:31:11,800 [INFO]   2020      0.442     [0.17-0.63]   0.451  [ELEVATED]    WIDE    BREACH
+2026-04-22 21:31:11,800 [INFO]   2021      0.742     [0.59-0.92]   0.328  [HIGH]           yes  BREACH
+2026-04-22 21:31:11,800 [INFO]   2022      0.757     [0.66-0.87]   0.208  [HIGH]           yes  BREACH
+2026-04-22 21:31:11,801 [INFO]   2023      0.818     [0.74-0.95]   0.213  [CRITICAL]       yes  BREACH
+2026-04-22 21:31:11,801 [INFO]   2024      0.664     [0.63-0.70]   0.074  [HIGH]           yes  BREACH
+2026-04-22 21:31:11,801 [INFO]   2025      0.673     [0.61-0.72]   0.113  [HIGH]           yes  BREACH
+2026-04-22 21:31:11,801 [INFO]   2026      0.680     [0.65-0.71]   0.059  [HIGH]           yes  BREACH
+2026-04-22 21:31:11,801 [INFO] 
+2026-04-22 21:31:11,801 [INFO]   NOTE: WIDE spread means models disagree on that year.
+2026-04-22 21:31:11,801 [INFO]         Treat those years as directional signals only.
+2026-04-22 21:31:11,810 [INFO]   Artefacts saved (14 files) -> outputs/
+2026-04-22 21:31:11,810 [INFO] Pipeline complete.

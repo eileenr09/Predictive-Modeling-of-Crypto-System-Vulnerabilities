@@ -4,10 +4,10 @@ evaluation.py
 All evaluation metrics, plots, and report generation.
 
 Metrics (Section 5.3 of the proposal):
-  ? Brier Score    - calibration of probabilistic output
-  ? Log Loss       - penalises overconfident wrong predictions
-  ? PR-AUC         - best for rare / imbalanced events
-  ? ROC-AUC        - overall discrimination ability
+  - Brier Score    - calibration of probabilistic output
+  - Log Loss       - penalises overconfident wrong predictions
+  - PR-AUC         - best for rare / imbalanced events
+  - ROC-AUC        - overall discrimination ability
 
 Plots generated (saved to outputs/):
   01_dataset_overview.png          - breach counts by year and source
@@ -31,13 +31,10 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib.colors as mcolors
+from matplotlib.ticker import MaxNLocator
 
 from sklearn.metrics import (
-    brier_score_loss, log_loss,
     average_precision_score, precision_recall_curve,
-    roc_auc_score, roc_curve,
     confusion_matrix,
 )
 from sklearn.calibration import calibration_curve
@@ -78,7 +75,9 @@ def _plot_01_overview(df, out_dir):
     src_cnt = df["source_id"].value_counts()
     src_labels = {"IIB": "Information\nIs Beautiful", "HHS": "HHS / OCR\nHealthcare",
                   "DBN": "DataBreach\nN", "DBEN": "DataBreach\nEU",
-                  "DF1": "Wikipedia\nExtended", "CSIS": "CSIS\nCyber Events"}
+                  "DF1": "Wikipedia\nExtended", "CSIS": "CSIS\nCyber Events",
+                  "CE": "Cyber Events\nDatabase", "WA": "WA Breach\nNotifications",
+                  "DHL": "DeFiHack\nLabs"}
     labels = [src_labels.get(s, s) for s in src_cnt.index]
     axes[1].barh(labels, src_cnt.values, color=PALETTE[:len(src_cnt)])
     axes[1].set_xlabel("Records Loaded")
@@ -362,7 +361,7 @@ def _plot_12_fold_metrics(wfv, out_dir):
         axes[0].plot(grp_s["test_year"], grp_s["brier"],
                      marker="o", linewidth=1.5, markersize=4,
                      color=PALETTE[i % len(PALETTE)], label=mname, alpha=0.85)
-    axes[0].set_title("Brier Score per Fold ( (lower better) better)", fontweight="bold")
+    axes[0].set_title("Brier Score per Fold (lower = better)", fontweight="bold")
     axes[0].set_ylabel("Brier Score"); axes[0].set_xlabel("Test Year")
     axes[0].grid(alpha=0.3); axes[0].legend(fontsize=7)
 
@@ -389,7 +388,7 @@ def _plot_12_fold_metrics(wfv, out_dir):
                              markersize=4, color=PALETTE[i % len(PALETTE)],
                              label=mname, alpha=0.85)
 
-    axes[1].set_title("Cumulative PR-AUC Over Time ( (higher better) better)", fontweight="bold")
+    axes[1].set_title("Cumulative PR-AUC Over Time (higher = better)", fontweight="bold")
     axes[1].set_ylabel("Cumulative PR-AUC"); axes[1].set_xlabel("Test Year")
     axes[1].set_ylim(0, 1.05)
     # Explicitly constrain x-axis to actual test year range to prevent
@@ -397,8 +396,7 @@ def _plot_12_fold_metrics(wfv, out_dir):
     all_test_years = sorted(preds_df["year"].unique()) if not preds_df.empty else []
     if len(all_test_years) >= 2:
         axes[1].set_xlim(all_test_years[0] - 1, all_test_years[-1] + 1)
-        axes[1].xaxis.set_major_locator(
-            __import__("matplotlib.ticker", fromlist=["MaxNLocator"]).MaxNLocator(integer=True))
+        axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
     axes[1].grid(alpha=0.3); axes[1].legend(fontsize=7)
 
     plt.tight_layout()
@@ -411,11 +409,11 @@ def _plot_12_fold_metrics(wfv, out_dir):
 # -----------------------------------------------------------------------------
 
 def brier_score(y_true: np.ndarray, y_prob: np.ndarray) -> float:
-    """BS = 1/N * ?(F_t - O_t)^2"""
+    """BS = mean((F_t - O_t)^2)"""
     return float(np.mean((y_prob - y_true) ** 2))
 
 
 def log_loss_manual(y_true: np.ndarray, y_prob: np.ndarray, eps=1e-15) -> float:
-    """LogLoss = -1/N * ?[O*log(F) + (1-O)*log(1-F)]"""
+    """LogLoss = -mean(O*log(F) + (1-O)*log(1-F))"""
     p = np.clip(y_prob, eps, 1 - eps)
     return -float(np.mean(y_true * np.log(p) + (1 - y_true) * np.log(1 - p)))

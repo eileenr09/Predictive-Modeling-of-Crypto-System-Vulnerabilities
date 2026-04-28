@@ -169,10 +169,19 @@ def _add_crypto_specific_features(df, yr):
     yr["crypto_unique_sectors"] = grp["sector"].nunique().reindex(yr.index, fill_value=0)
     yr["crypto_log_records"]    = np.log1p(
         grp["records_affected"].sum().reindex(yr.index, fill_value=0))
-    for method in ["hacking", "phishing", "insider", "malware"]:
-        sub   = cr[cr["method_category"] == method].groupby("year").size()
-        total = cr.groupby("year").size().replace(0, 1)
-        yr[f"crypto_pct_{method}"] = (sub / total).reindex(yr.index, fill_value=0)
+    crypto_total = cr.groupby("year").size().replace(0, 1)
+    for method in ["hacking", "phishing", "insider", "malware", "smart_contract_exploit"]:
+        sub = cr[cr["method_category"] == method].groupby("year").size()
+        yr[f"crypto_pct_{method}"] = (sub / crypto_total).reindex(yr.index, fill_value=0)
+    # Smart contract exploits as absolute count (key crypto-specific signal)
+    sc_count = cr[cr["method_category"] == "smart_contract_exploit"].groupby("year").size()
+    yr["crypto_smart_contract_count"] = sc_count.reindex(yr.index, fill_value=0)
+    # Smart contract exploits as fraction of ALL breaches (not just crypto).
+    # This captures the DeFi explosion post-2021 relative to the whole landscape.
+    sc_all = df[df["method_category"] == "smart_contract_exploit"].groupby("year").size()
+    yr["smart_contract_frac_all"] = (
+        sc_all / yr["total_breaches"].replace(0, 1)
+    ).reindex(yr.index, fill_value=0)
     return yr
 
 
@@ -185,6 +194,7 @@ def _add_rolling_features(yr):
     roll_cols = [
         "total_breaches", "log_records_total",
         "crypto_breach_count", "large_breach_count", "crypto_log_records",
+        "crypto_smart_contract_count", "smart_contract_frac_all",
     ]
     for col in roll_cols:
         if col not in yr.columns:
@@ -218,15 +228,21 @@ def _add_trend_features(yr):
         "crypto_breach_count", pd.Series(0, index=yr.index)
     ).cumsum()
 
-    def _slope(series, w=3):
-        slopes = []
-        for i in range(len(series)):
-            # Exclude current year -- only use prior window
-            window = series.iloc[max(0, i - w + 1): i].values
-            slopes.append(
-                float(np.polyfit(np.arange(len(window)), window, 1)[0])
-                if len(window) >= 2 else 0.0
-            )
+    def _slope(series: pd.Series, w: int = 3) -> pd.Series:
+        """Linear slope over the prior w-1 years, excluding the current year."""
+        vals   = series.values.astype(float)
+        n      = len(vals)
+        slopes = np.zeros(n)
+        for i in range(n):
+            window = vals[max(0, i - w + 1): i]  # up to w-1 prior values
+            if len(window) < 2:
+                continue
+            x = np.arange(len(window), dtype=float)
+            # OLS slope: (n*Sxy - Sx*Sy) / (n*Sxx - Sx^2)
+            x_bar = x.mean()
+            y_bar = window.mean()
+            denom = ((x - x_bar) ** 2).sum()
+            slopes[i] = ((x - x_bar) * (window - y_bar)).sum() / denom if denom else 0.0
         return pd.Series(slopes, index=series.index)
 
     yr["breach_trend_slope"] = _slope(yr["total_breaches"])

@@ -1,34 +1,27 @@
 """
 data_ingestion.py
 =================
-Loads and harmonises all five real datasets uploaded for this project:
+Loads and harmonises all eight data sources:
 
-  Source A – Balloon / Information is Beautiful (IIB)
-             Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv
-             ~440 high-profile global breaches 2004-2022, includes sector & method.
-
+  Source A – IIB / Information is Beautiful
+             ~440 high-profile global breaches 2004-2022, sector & method.
   Source B – HHS / OCR Healthcare Breaches
-             Cyber_Security_Breaches.csv
-             ~1 285 US healthcare breaches 2009-present, fine-grained breach type.
-
-  Source C – Wikipedia/Statista breach list (DataBreachN)
-             Data_BreachesN_new.csv
-             ~352 international breaches, country, org-type, method.
-
-  Source D – European breach registry (DataBreachEN)
-             Data_Breaches_EN_V2_2004_2017_20180220.csv
-             ~277 breaches, European focus 2004-2017, sector & method.
-
-  Source E – Wikipedia extended list (df_1)
-             df_1.csv
-             ~352 breaches with entity name, year, records, method.
-
+             ~908 US healthcare breaches 2009-present, fine-grained breach type.
+  Source C – DataBreachN (Wikipedia/Statista)
+             ~389 international breaches, country, org-type, method.
+  Source D – DataBreachEN (European registry)
+             ~270 European breaches 2004-2017, sector & method.
+  Source E – df_1 (Wikipedia extended)
+             ~349 breaches with entity name, year, records, method.
   Source F – CSIS Significant Cyber Incidents PDF
-             260306_Cyber_Events.pdf
              State-sponsored / major incidents 2006-present (text-mined).
+  Source G – Cyber Events structured incident database
+             16 532 structured incidents 2014-2026, largest single source.
+  Source H – WA Data Breach Notifications
+             1 533 formal breach notifications to Washington State AG, 2016-2026.
 
-Each source is loaded into a canonical schema:
-  date, year, entity, sector, method_raw, method_category,
+All sources normalised to a canonical schema:
+  year, entity, sector_raw, sector, method_raw, method_category,
   records_affected, is_crypto, source_id
 """
 
@@ -47,25 +40,43 @@ CRYPTO_KEYWORDS = [
     "protocol", "token", "web3", "dex", "cex", "uniswap", "wazirx",
     "ftx", "bitmart", "bitmex", "bitfinex", "mt.gox", "mtgox",
     "digital asset", "altcoin",
+    # Additional exchanges and protocols (post-2020 growth)
+    "solana", "polygon", "metamask", "opensea", "ledger", "trezor",
+    "luna", "terra", "avalanche", "cardano", "polkadot", "chainlink",
+    "tether", "usdc", "usdt", "stablecoin", "rug pull", "flash loan",
+    "ronin", "axie", "harmony", "nomad", "wintermute", "euler",
 ]
+
+# Compiled pattern for fast vectorised matching
+_CRYPTO_PATTERN = "|".join(re.escape(k) for k in CRYPTO_KEYWORDS)
 
 # ── Method normalisation map ────────────────────────────────────────────────
 METHOD_MAP = {
     "hacked"               : "hacking",
     "hack"                 : "hacking",
     "hacking"              : "hacking",
+    "credential stuffing"  : "hacking",
+    "brute force"          : "hacking",
+    "zero-day"             : "hacking",
+    "zero day"             : "hacking",
+    "sql injection"        : "hacking",
     "ransomware"           : "malware",
     "malware"              : "malware",
     "virus"                : "malware",
+    "spyware"              : "malware",
+    "trojan"               : "malware",
     "phish"                : "phishing",
     "social engineering"   : "phishing",
     "spear"                : "phishing",
+    "vishing"              : "phishing",
+    "smishing"             : "phishing",
     "inside job"           : "insider",
     "insider"              : "insider",
     "employee"             : "insider",
     "poor security"        : "poor_security",
     "accidentally published": "poor_security",
     "misconfigur"          : "poor_security",
+    "exposed"              : "poor_security",
     "oops"                 : "poor_security",
     "lost device"          : "lost_device",
     "lost / stolen"        : "lost_device",
@@ -75,10 +86,14 @@ METHOD_MAP = {
     "smart contract"       : "smart_contract_exploit",
     "protocol exploit"     : "smart_contract_exploit",
     "flash loan"           : "smart_contract_exploit",
+    "rug pull"             : "smart_contract_exploit",
+    "bridge exploit"       : "smart_contract_exploit",
     "ddos"                 : "ddos",
     "denial of service"    : "ddos",
     "supply chain"         : "supply_chain",
     "third.party"          : "supply_chain",
+    "third-party"          : "supply_chain",
+    "vendor"               : "supply_chain",
 }
 
 SECTOR_MAP = {
@@ -130,8 +145,12 @@ def categorise_sector(raw: str) -> str:
 def flag_crypto(text: str) -> bool:
     if not isinstance(text, str):
         return False
-    t = text.lower()
-    return any(k in t for k in CRYPTO_KEYWORDS)
+    return bool(re.search(_CRYPTO_PATTERN, text, re.IGNORECASE))
+
+
+def _flag_crypto_series(s: pd.Series) -> pd.Series:
+    """Vectorised version of flag_crypto for DataFrame columns."""
+    return s.astype(str).str.contains(_CRYPTO_PATTERN, case=False, na=False, regex=True)
 
 
 def _clean_records(val) -> float:
@@ -176,6 +195,24 @@ CANONICAL_COLS = [
     "year", "entity", "sector_raw", "sector", "method_raw",
     "method_category", "records_affected", "is_crypto", "source_id",
 ]
+
+
+def _parse_magnitude_str(val) -> float:
+    """Parse CE magnitude strings like '5M+ downloads', '1.2 million records'."""
+    if not isinstance(val, str):
+        return np.nan
+    val = val.lower().replace(",", "")
+    m = re.search(r"([\d.]+)\s*(m\b|million|b\b|billion|k\b|thousand)?", val)
+    if m:
+        try:
+            n = float(m.group(1))
+            suffix = (m.group(2) or "").strip()
+            mult = {"m": 1e6, "million": 1e6, "b": 1e9, "billion": 1e9,
+                    "k": 1e3, "thousand": 1e3}.get(suffix, 1)
+            return n * mult
+        except ValueError:
+            pass
+    return np.nan
 
 
 # ── Source A: IIB / Balloon ──────────────────────────────────────────────────
@@ -576,77 +613,61 @@ def _ce_method(subtype: str) -> str:
 def load_cyber_events(path: str) -> pd.DataFrame:
     """
     Load the structured cyber incident database (Source G).
-    Each row is one named incident against one organisation.
-    Records affected: extracted from 'magnitude' or org_data/cust_data text
-    where available; otherwise NaN (the model uses log-transformed sums so NaN
-    rows still contribute to breach-count features).
+    Vectorised implementation — avoids iterrows on 16k+ rows.
     """
     df = pd.read_csv(path, low_memory=False)
     df.columns = [c.strip().lower() for c in df.columns]
 
-    # Parse numeric records from magnitude field where it contains a count string
-    def _parse_magnitude(val) -> float:
-        if not isinstance(val, str):
-            return np.nan
-        # Patterns like "5M+ downloads affected", "1.2 million records"
-        val = val.lower().replace(",", "")
-        m = re.search(r"([\d.]+)\s*(m\b|million|b\b|billion|k\b|thousand)?", val)
-        if m:
-            try:
-                n = float(m.group(1))
-                suffix = (m.group(2) or "").strip()
-                mult = {"m": 1e6, "million": 1e6, "b": 1e9, "billion": 1e9,
-                        "k": 1e3, "thousand": 1e3}.get(suffix, 1)
-                return n * mult
-            except ValueError:
-                pass
-        return np.nan
+    df["year"] = pd.to_numeric(df["year"].astype(str).str.strip(), errors="coerce")
+    df = df.dropna(subset=["year"])
+    df["year"] = df["year"].astype(int)
+    df = df[(df["year"] >= 2004) & (df["year"] <= 2026)].copy()
 
-    records = []
-    for _, row in df.iterrows():
-        try:
-            year = int(float(str(row.get("year", "")).strip()))
-        except (ValueError, TypeError):
-            continue
-        if year < 2004 or year > 2026:
-            continue
+    def _col(name: str, default: str = "") -> pd.Series:
+        if name in df.columns:
+            return df[name].fillna(default).astype(str)
+        return pd.Series(default, index=df.index, dtype=str)
 
-        entity    = str(row.get("organization", "")).strip()
-        industry  = str(row.get("industry", ""))
-        subtype   = str(row.get("event_subtype", ""))
-        desc      = str(row.get("description", ""))
-        org_data  = str(row.get("org_data", ""))
-        cust_data = str(row.get("cust_data", ""))
-        magnitude = row.get("magnitude", np.nan)
-        motive    = str(row.get("motive", ""))
+    entity   = _col("organization").str.strip()
+    industry = _col("industry")
+    subtype  = _col("event_subtype")
+    desc     = _col("description")
+    motive   = _col("motive")
 
-        # Method: check description/motive for more specific keywords first,
-        # then fall back to event_subtype mapping
-        method_text = subtype + " " + motive + " " + desc
-        method_cat  = _ce_method(subtype)
-        # Override with description keywords for higher-signal methods
-        for kw, cat in [("ransomware", "malware"), ("phish", "phishing"),
-                        ("supply chain", "supply_chain"), ("insider", "insider"),
-                        ("ddos", "ddos"), ("smart contract", "smart_contract_exploit"),
-                        ("flash loan", "smart_contract_exploit")]:
-            if kw in method_text.lower():
-                method_cat = cat
-                break
+    # Method: map primary subtype token, fall back to generic categoriser
+    primary    = subtype.str.split(",").str[0].str.strip()
+    method_cat = primary.map(_CE_METHOD_MAP)
+    unmapped   = method_cat.isna()
+    method_cat[unmapped] = primary[unmapped].apply(categorise_method)
+    method_cat = method_cat.fillna("other")
 
-        records.append({
-            "year"            : year,
-            "entity"          : entity,
-            "sector_raw"      : industry,
-            "sector"          : _ce_sector(industry),
-            "method_raw"      : subtype,
-            "method_category" : method_cat,
-            "records_affected": _parse_magnitude(magnitude),
-            "is_crypto"       : flag_crypto(entity + " " + desc),
-            "source_id"       : "CE",
-        })
+    # Override with higher-signal keywords from description/motive (first match wins)
+    method_text = (subtype + " " + motive + " " + desc).str.lower()
+    overridden  = pd.Series(False, index=df.index)
+    for kw, cat in [("ransomware", "malware"), ("phish", "phishing"),
+                    ("supply chain", "supply_chain"), ("insider", "insider"),
+                    ("ddos", "ddos"), ("smart contract", "smart_contract_exploit"),
+                    ("flash loan", "smart_contract_exploit"),
+                    ("rug pull", "smart_contract_exploit")]:
+        mask = method_text.str.contains(kw, regex=False, na=False) & ~overridden
+        method_cat[mask] = cat
+        overridden |= mask
 
-    log.info(f"  CE: {len(records)} rows loaded from {path}")
-    return pd.DataFrame(records, columns=CANONICAL_COLS)
+    magnitude = df["magnitude"] if "magnitude" in df.columns else pd.Series(np.nan, index=df.index)
+
+    out = pd.DataFrame({
+        "year"            : df["year"].values,
+        "entity"          : entity.values,
+        "sector_raw"      : industry.values,
+        "sector"          : industry.apply(_ce_sector).values,
+        "method_raw"      : subtype.values,
+        "method_category" : method_cat.values,
+        "records_affected": magnitude.apply(_parse_magnitude_str).values,
+        "is_crypto"       : _flag_crypto_series(entity + " " + desc).values,
+        "source_id"       : "CE",
+    })
+    log.info(f"  CE: {len(out)} rows loaded from {path}")
+    return out[CANONICAL_COLS].reset_index(drop=True)
 
 
 # ── Source H: WA Data Breach Notifications ───────────────────────────────────
@@ -675,69 +696,125 @@ _WA_SECTOR_MAP = {
 def load_wa_breach(path: str) -> pd.DataFrame:
     """
     Load Washington State Data Breach Notifications (Source H).
-    All rows have a named entity, industry type, year, and cause.
+    Vectorised implementation.
     WashingtoniansAffected is used as records_affected (minimum estimate;
     true national figure is higher, but this is what's reported).
     """
     df = pd.read_csv(path)
 
-    records = []
-    for _, row in df.iterrows():
-        try:
-            year = int(float(str(row.get("Year", "")).strip()))
-        except (ValueError, TypeError):
-            continue
-        if year < 2004 or year > 2026:
-            continue
+    df["Year"] = pd.to_numeric(df["Year"].astype(str).str.strip(), errors="coerce")
+    df = df.dropna(subset=["Year"])
+    df["Year"] = df["Year"].astype(int)
+    df = df[(df["Year"] >= 2004) & (df["Year"] <= 2026)].copy()
 
-        entity    = str(row.get("Name", "")).strip()
-        industry  = str(row.get("IndustryType", ""))
-        cause     = str(row.get("DataBreachCause", ""))
-        atk_type  = str(row.get("CyberattackType", ""))
-        affected  = row.get("WashingtoniansAffected", np.nan)
+    entity   = df["Name"].fillna("").astype(str).str.strip() if "Name" in df.columns else pd.Series("", index=df.index)
+    industry = df["IndustryType"].fillna("").astype(str) if "IndustryType" in df.columns else pd.Series("", index=df.index)
+    cause    = df["DataBreachCause"].fillna("").astype(str) if "DataBreachCause" in df.columns else pd.Series("", index=df.index)
+    atk_type = df["CyberattackType"].fillna("").astype(str) if "CyberattackType" in df.columns else pd.Series("", index=df.index)
+    affected = df["WashingtoniansAffected"] if "WashingtoniansAffected" in df.columns else pd.Series(np.nan, index=df.index)
 
-        # Method: prefer CyberattackType (more specific), fall back to cause
-        method_raw = atk_type if atk_type not in ("nan", "") else cause
-        if atk_type in _WA_METHOD_MAP:
-            method_cat = _WA_METHOD_MAP[atk_type]
-        elif "unauthorized" in cause.lower():
-            method_cat = "unauthorized_access"
-        elif "theft" in cause.lower():
-            method_cat = "lost_device"
-        else:
-            method_cat = categorise_method(method_raw)
+    # Method: prefer CyberattackType (more specific), fall back to cause
+    method_raw = atk_type.where(~atk_type.isin(["nan", "", "NaN"]), cause)
+    method_cat = atk_type.map(_WA_METHOD_MAP)
+    # Fill unmapped: check cause for unauthorized/theft, then generic categoriser
+    unmapped   = method_cat.isna()
+    cause_lower = cause.str.lower()
+    method_cat[unmapped & cause_lower.str.contains("unauthorized", na=False)] = "unauthorized_access"
+    method_cat[unmapped & cause_lower.str.contains("theft", na=False)]        = "lost_device"
+    still_unmapped = method_cat.isna()
+    method_cat[still_unmapped] = method_raw[still_unmapped].apply(categorise_method)
 
-        sector = _WA_SECTOR_MAP.get(industry, categorise_sector(industry))
+    sector = industry.map(_WA_SECTOR_MAP)
+    sector[sector.isna()] = industry[sector.isna()].apply(categorise_sector)
 
-        records.append({
-            "year"            : year,
-            "entity"          : entity,
-            "sector_raw"      : industry,
-            "sector"          : sector,
-            "method_raw"      : method_raw,
-            "method_category" : method_cat,
-            "records_affected": float(affected) if pd.notna(affected) else np.nan,
-            "is_crypto"       : flag_crypto(entity),
-            "source_id"       : "WA",
-        })
+    out = pd.DataFrame({
+        "year"            : df["Year"].values,
+        "entity"          : entity.values,
+        "sector_raw"      : industry.values,
+        "sector"          : sector.values,
+        "method_raw"      : method_raw.values,
+        "method_category" : method_cat.values,
+        "records_affected": pd.to_numeric(affected, errors="coerce").values,
+        "is_crypto"       : _flag_crypto_series(entity).values,
+        "source_id"       : "WA",
+    })
+    log.info(f"  WA: {len(out)} rows loaded from {path}")
+    return out[CANONICAL_COLS].reset_index(drop=True)
 
-    log.info(f"  WA: {len(records)} rows loaded from {path}")
-    return pd.DataFrame(records, columns=CANONICAL_COLS)
+
+# ── Source I: DeFiHackLabs incident database ─────────────────────────────────
+# 690 DeFi exploits 2021–2026 parsed from the DeFiHackLabs GitHub repository.
+# All incidents are crypto-related by definition; loss_usd_approx used as
+# records_affected proxy (consistent with CSIS loader's use of loss_usd).
+
+_DHL_METHOD_MAP = {
+    "Business Logic"                       : "smart_contract_exploit",
+    "Price Manipulation"                   : "smart_contract_exploit",
+    "Access Control Flaw"                  : "unauthorized_access",
+    "Reentrancy"                           : "smart_contract_exploit",
+    "Flash Loan + Price Manipulation"      : "smart_contract_exploit",
+    "Lack Of Access Control"               : "unauthorized_access",
+    "Arbitrary External Call Vulnerability": "smart_contract_exploit",
+    "Reflection Token"                     : "smart_contract_exploit",
+    "Flashloan Attack"                     : "smart_contract_exploit",
+    "Incorrect Input Validation"           : "smart_contract_exploit",
+    "Precision Loss"                       : "smart_contract_exploit",
+    "Insufficient Validation"              : "smart_contract_exploit",
+    "Oracle Manipulation"                  : "smart_contract_exploit",
+    "Sandwich Attack"                      : "smart_contract_exploit",
+    "Rug Pull"                             : "smart_contract_exploit",
+    "Rugpull"                              : "smart_contract_exploit",
+    "Integer Overflow"                     : "smart_contract_exploit",
+    "Governance Attack"                    : "smart_contract_exploit",
+    "Bridge Exploit"                       : "smart_contract_exploit",
+}
+
+
+def load_defi_hacks(path: str) -> pd.DataFrame:
+    """
+    Load DeFiHackLabs incident database (Source I).
+    All 690 incidents are crypto DeFi exploits — is_crypto=True for every row.
+    loss_usd_approx is stored in records_affected as a financial-loss proxy.
+    """
+    df = pd.read_csv(path)
+    df["year"] = pd.to_numeric(df["year"], errors="coerce")
+    df = df.dropna(subset=["year"])
+    df["year"] = df["year"].astype(int)
+    df = df[(df["year"] >= 2004) & (df["year"] <= 2026)].copy()
+
+    attack = df["attack_type"].fillna("").astype(str)
+    method_cat = attack.map(_DHL_METHOD_MAP)
+    unmapped = method_cat.isna()
+    method_cat[unmapped] = attack[unmapped].apply(categorise_method)
+    method_cat = method_cat.fillna("smart_contract_exploit")
+
+    out = pd.DataFrame({
+        "year"            : df["year"].values,
+        "entity"          : df["protocol"].fillna("").astype(str).str.strip().values,
+        "sector_raw"      : "defi",
+        "sector"          : "financial",
+        "method_raw"      : attack.values,
+        "method_category" : method_cat.values,
+        "records_affected": pd.to_numeric(df["loss_usd_approx"], errors="coerce").values,
+        "is_crypto"       : True,
+        "source_id"       : "DHL",
+    })
+    log.info(f"  DHL: {len(out)} rows loaded from {path}")
+    return out[CANONICAL_COLS].reset_index(drop=True)
 
 
 # ── Master loader ─────────────────────────────────────────────────────────────
 def load_all_datasets(data_dir: str = "data") -> pd.DataFrame:
     """
-    Loads all eight data sources, de-duplicates, and returns a unified DataFrame.
+    Loads all nine data sources, de-duplicates, and returns a unified DataFrame.
 
     Sources:
       A–F  Core breach datasets (CSV + PDF) — 2,900 raw rows
-      G    Cyber Events structured incident DB (cyber_events_2026-03-22.csv) — 16,532 rows
+      G    Cyber Events structured incident DB — 16,532 rows
       H    WA Data Breach Notifications — 1,533 rows
+      I    DeFiHackLabs DeFi exploits — 690 rows
 
-    Total after de-duplication on (entity, year, method_category): ~18,000–19,000 rows.
-    New sources G and H are searched in data_dir first, then /mnt/user-data/uploads
-    as a fallback so they work without copying files to the data/ folder.
+    Total after de-duplication on (entity, year, method_category): ~19,000+ rows.
     """
     _UPLOAD_DIR = "/mnt/user-data/uploads"
 
@@ -750,14 +827,15 @@ def load_all_datasets(data_dir: str = "data") -> pd.DataFrame:
         return None
 
     core_loaders = [
-        (load_iib,       "Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv"),
-        (load_hhs,       "Cyber_Security_Breaches.csv"),
-        (load_dbn,       "Data_BreachesN_new.csv"),
-        (load_dben,      "Data_Breaches_EN_V2_2004_2017_20180220.csv"),
-        (load_df1,       "df_1.csv"),
-        (load_csis_pdf,  "260306_Cyber_Events.pdf"),
+        (load_iib,          "Balloon_Race_Data_Breaches_-_LATEST_-_breaches.csv"),
+        (load_hhs,          "Cyber_Security_Breaches.csv"),
+        (load_dbn,          "Data_BreachesN_new.csv"),
+        (load_dben,         "Data_Breaches_EN_V2_2004_2017_20180220.csv"),
+        (load_df1,          "df_1.csv"),
+        (load_csis_pdf,     "260306_Cyber_Events.pdf"),
         (load_cyber_events, "cyber_events_2026-03-22.csv"),
-        (load_wa_breach, "Data_Breach_Notifications_Affecting_Washington_Residents.csv"),
+        (load_wa_breach,    "Data_Breach_Notifications_Affecting_Washington_Residents.csv"),
+        (load_defi_hacks,   "defi_hack_labs.csv"),
     ]
 
     frames = []
